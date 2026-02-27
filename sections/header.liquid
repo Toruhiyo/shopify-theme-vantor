@@ -109,61 +109,7 @@
 
                 <div class="mega-menu" data-mega-panel>
                   <div class="page-width">
-                    {%- if col.image -%}
-                      <div class="mega-menu__auto-layout">
-                        <div class="mega-menu__auto-image">
-                          <a href="{{ col.url }}">
-                            <img
-                              src="{{ col.image | image_url: width: 500, height: 320, crop: 'center' }}"
-                              alt="{{ col.title }}"
-                              width="500"
-                              height="320"
-                              loading="lazy"
-                            >
-                          </a>
-                          <p class="mega-menu__auto-image-label">{{ col.title }}</p>
-                          {%- if col.description != blank -%}
-                            <p class="mega-menu__auto-image-desc">{{ col.description | strip_html | truncate: 100 }}</p>
-                          {%- endif -%}
-                        </div>
-                        <div class="mega-menu__auto-products">
-                          <div class="mega-menu__product-grid">
-                            {%- for product in col.products limit: 6 -%}
-                              <a href="{{ product.url }}" class="mega-menu__product-card">
-                                {%- if product.featured_image -%}
-                                  <div class="mega-menu__product-image">
-                                    <img src="{{ product.featured_image | image_url: width: 200, height: 200, crop: 'center' }}" alt="{{ product.title }}" width="200" height="200" loading="lazy">
-                                  </div>
-                                {%- endif -%}
-                                <span class="mega-menu__product-title">{{ product.title }}</span>
-                                <span class="mega-menu__product-price">{{ product.price | money }}</span>
-                              </a>
-                            {%- endfor -%}
-                          </div>
-                        </div>
-                      </div>
-                    {%- else -%}
-                      <div class="mega-menu__product-grid">
-                        {%- for product in col.products limit: 8 -%}
-                          <a href="{{ product.url }}" class="mega-menu__product-card">
-                            {%- if product.featured_image -%}
-                              <div class="mega-menu__product-image">
-                                <img src="{{ product.featured_image | image_url: width: 200, height: 200, crop: 'center' }}" alt="{{ product.title }}" width="200" height="200" loading="lazy">
-                              </div>
-                            {%- endif -%}
-                            <span class="mega-menu__product-title">{{ product.title }}</span>
-                            <span class="mega-menu__product-price">{{ product.price | money }}</span>
-                          </a>
-                        {%- endfor -%}
-                      </div>
-                    {%- endif -%}
-
-                    <div class="mega-menu__footer">
-                      <a href="{{ col.url }}" class="mega-menu__view-all">
-                        Shop All {{ col.title }} ({{ col.products_count }})
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                      </a>
-                    </div>
+                    {% render 'mega-menu-config', col: col %}
                   </div>
                 </div>
               </div>
@@ -282,7 +228,7 @@
       {%- endif -%}
 
       {%- if is_catalog_link -%}
-        {%- comment -%} Auto-generated from store collections (priority over manual children) {%- endcomment -%}
+        {%- comment -%} Auto-generated from store collections with sub-category links {%- endcomment -%}
         <div class="mobile-menu__group" data-mobile-accordion>
           <button class="mobile-menu__link mobile-menu__link--parent" aria-expanded="false" data-mobile-accordion-trigger>
             <span>{{ link.title }}</span>
@@ -293,10 +239,17 @@
               {%- if col.handle == 'all' or col.products_count == 0 -%}
                 {%- continue -%}
               {%- endif -%}
-              <a href="{{ col.url }}" class="mobile-menu__sublink">
-                {{ col.title }}
-                <span class="mobile-menu__count">{{ col.products_count }}</span>
-              </a>
+              <div class="mobile-menu__subgroup" data-mobile-accordion>
+                <button class="mobile-menu__sublink mobile-menu__sublink--parent" aria-expanded="false" data-mobile-accordion-trigger>
+                  <span>{{ col.title }}</span>
+                  <span class="mobile-menu__count">{{ col.products_count }}</span>
+                  <span class="mobile-menu__chevron">{% render 'icon-chevron' %}</span>
+                </button>
+                <div class="mobile-menu__submenu mobile-menu__submenu--nested" data-mobile-accordion-content aria-hidden="true">
+                  <a href="{{ col.url }}" class="mobile-menu__grandchild-link mobile-menu__grandchild-link--all">Shop All {{ col.title }}</a>
+                  {% render 'mega-menu-mobile', col: col %}
+                </div>
+              </div>
             {%- endfor -%}
             <a href="/collections" class="mobile-menu__sublink" style="color: var(--color-primary); font-weight: 600;">View All Collections</a>
           </div>

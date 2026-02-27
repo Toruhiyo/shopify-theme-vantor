@@ -113,6 +113,35 @@
     }
   }
 
+  /* --- Support Dropdown --- */
+  class SupportDropdown {
+    constructor() {
+      this.el = document.querySelector('[data-support-dropdown]');
+      if (!this.el) return;
+
+      this.timeout = null;
+
+      this.el.addEventListener('mouseenter', () => {
+        clearTimeout(this.timeout);
+        this.el.classList.add('is-open');
+      });
+
+      this.el.addEventListener('mouseleave', () => {
+        this.timeout = setTimeout(() => this.el.classList.remove('is-open'), 150);
+      });
+
+      this.el.querySelector('.header__support-trigger')?.addEventListener('click', () => {
+        this.el.classList.toggle('is-open');
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!this.el.contains(e.target)) {
+          this.el.classList.remove('is-open');
+        }
+      });
+    }
+  }
+
   /* --- Mobile Menu --- */
   class MobileMenu {
     constructor() {
@@ -391,6 +420,7 @@
   function init() {
     new CartDrawer();
     new DesktopNav();
+    new SupportDropdown();
     new MobileMenu();
     new SearchOverlay();
     new StickyHeader();

@@ -154,33 +154,62 @@
       </div>
     </div>
 
-    {%- comment -%} Tabs Section {%- endcomment -%}
+    {%- comment -%} Tabs Section — driven by product metafields {%- endcomment -%}
+    {%- assign tab_overview = product.metafields.custom.overview.value -%}
+    {%- assign tab_specs = product.metafields.custom.specs.value -%}
+    {%- assign tab_compatibility = product.metafields.custom.compatibility.value -%}
+    {%- assign tab_in_the_box = product.metafields.custom.in_the_box.value -%}
+    {%- assign tab_warranty = product.metafields.custom.warranty.value -%}
+
+    {%- assign mf_tabs = '' -%}
+    {%- if tab_overview != blank -%}{%- assign mf_tabs = mf_tabs | append: 'overview,' -%}{%- endif -%}
+    {%- if tab_specs != blank -%}{%- assign mf_tabs = mf_tabs | append: 'specs,' -%}{%- endif -%}
+    {%- if tab_compatibility != blank -%}{%- assign mf_tabs = mf_tabs | append: 'compatibility,' -%}{%- endif -%}
+    {%- if tab_in_the_box != blank -%}{%- assign mf_tabs = mf_tabs | append: 'in_the_box,' -%}{%- endif -%}
+    {%- if tab_warranty != blank -%}{%- assign mf_tabs = mf_tabs | append: 'warranty,' -%}{%- endif -%}
+    {%- assign mf_tabs_arr = mf_tabs | split: ',' -%}
+
     <div class="mt-lg" data-tabs>
       <div class="tabs" role="tablist">
-        {%- assign tabs = section.blocks | where: 'type', 'tab' -%}
-        {%- for block in tabs -%}
-          <button
-            class="tabs__tab {% if forloop.first %}is-active{% endif %}"
-            data-tab="tab-{{ block.id }}"
-            role="tab"
-            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
-            {{ block.shopify_attributes }}
-          >
-            {{ block.settings.title }}
-          </button>
-        {%- endfor -%}
-        {%- if tabs.size == 0 -%}
+        {%- if mf_tabs_arr.size > 0 -%}
+          {%- for tab_key in mf_tabs_arr -%}
+            {%- if tab_key == blank -%}{%- continue -%}{%- endif -%}
+            <button
+              class="tabs__tab {% if forloop.first %}is-active{% endif %}"
+              data-tab="tab-{{ tab_key }}"
+              role="tab"
+              aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+            >
+              {%- case tab_key -%}
+                {%- when 'overview' -%}Overview
+                {%- when 'specs' -%}Specs
+                {%- when 'compatibility' -%}Compatibility
+                {%- when 'in_the_box' -%}In the Box
+                {%- when 'warranty' -%}Warranty
+              {%- endcase -%}
+            </button>
+          {%- endfor -%}
+        {%- else -%}
           <button class="tabs__tab is-active" data-tab="tab-overview" role="tab" aria-selected="true">Overview</button>
           <button class="tabs__tab" data-tab="tab-specs" role="tab" aria-selected="false">Specs</button>
         {%- endif -%}
       </div>
 
-      {%- for block in tabs -%}
-        <div class="tabs__panel {% if forloop.first %}is-active{% endif %}" data-panel="tab-{{ block.id }}" role="tabpanel">
-          <div class="accordion__body">{{ block.settings.content }}</div>
-        </div>
-      {%- endfor -%}
-      {%- if tabs.size == 0 -%}
+      {%- if mf_tabs_arr.size > 0 -%}
+        {%- for tab_key in mf_tabs_arr -%}
+          {%- if tab_key == blank -%}{%- continue -%}{%- endif -%}
+          {%- case tab_key -%}
+            {%- when 'overview' -%}{%- assign tab_content = tab_overview -%}
+            {%- when 'specs' -%}{%- assign tab_content = tab_specs -%}
+            {%- when 'compatibility' -%}{%- assign tab_content = tab_compatibility -%}
+            {%- when 'in_the_box' -%}{%- assign tab_content = tab_in_the_box -%}
+            {%- when 'warranty' -%}{%- assign tab_content = tab_warranty -%}
+          {%- endcase -%}
+          <div class="tabs__panel {% if forloop.first %}is-active{% endif %}" data-panel="tab-{{ tab_key }}" role="tabpanel">
+            <div class="accordion__body pdp-tab-content">{{ tab_content | newline_to_br }}</div>
+          </div>
+        {%- endfor -%}
+      {%- else -%}
         <div class="tabs__panel is-active" data-panel="tab-overview" role="tabpanel">
           <div class="accordion__body">{{ product.description }}</div>
         </div>

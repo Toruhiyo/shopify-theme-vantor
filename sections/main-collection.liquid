@@ -46,7 +46,8 @@
           {%- endif -%}
         {%- endfor -%}
 
-        {%- if collection.filters | map: 'active_values' | flatten | size > 0 -%}
+        {%- assign active_filter_values = collection.filters | map: 'active_values' | flatten -%}
+        {%- if active_filter_values.size > 0 -%}
           <a href="{{ collection.url }}" class="filter-chip" style="color: var(--color-primary); border-color: var(--color-primary);">
             {{ 'collections.clear_all' | t }}
           </a>

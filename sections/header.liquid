@@ -76,8 +76,8 @@
   {%- comment -%}
     Row 2: Category sub-nav panels.
     Two sources:
-      A) Top-level links that have children in the menu (manual hierarchy)
-      B) "Catalog" / "Collections" links → auto-generate from store collections
+      A) "Catalog" / "Collections" links → auto-generate from store collections (priority)
+      B) Other top-level links that have children in the menu (manual hierarchy)
   {%- endcomment -%}
 
   {%- assign default_subnav_set = false -%}
@@ -88,8 +88,93 @@
       {%- assign is_catalog_link = true -%}
     {%- endif -%}
 
-    {%- comment -%} === SOURCE A: Manual menu hierarchy === {%- endcomment -%}
-    {%- if link.links.size > 0 -%}
+    {%- comment -%} === SOURCE A: Auto-generated catalog from store collections (takes priority) === {%- endcomment -%}
+    {%- if is_catalog_link -%}
+      <div
+        class="header__subnav {% unless default_subnav_set %}is-default is-visible{% endunless %}"
+        data-subnav-panel="{{ forloop.index0 }}"
+      >
+        <div class="page-width">
+          <div class="header__subnav-scroll">
+            {%- for col in collections -%}
+              {%- if col.handle == 'all' or col.products_count == 0 -%}
+                {%- continue -%}
+              {%- endif -%}
+
+              <div class="header__subnav-item" data-subnav-has-mega>
+                <a href="{{ col.url }}" class="header__subnav-link">
+                  {{ col.title }}
+                  <span class="header__subnav-chevron">{% render 'icon-chevron' %}</span>
+                </a>
+
+                <div class="mega-menu" data-mega-panel>
+                  <div class="page-width">
+                    {%- if col.image -%}
+                      <div class="mega-menu__auto-layout">
+                        <div class="mega-menu__auto-image">
+                          <a href="{{ col.url }}">
+                            <img
+                              src="{{ col.image | image_url: width: 500, height: 320, crop: 'center' }}"
+                              alt="{{ col.title }}"
+                              width="500"
+                              height="320"
+                              loading="lazy"
+                            >
+                          </a>
+                          <p class="mega-menu__auto-image-label">{{ col.title }}</p>
+                          {%- if col.description != blank -%}
+                            <p class="mega-menu__auto-image-desc">{{ col.description | strip_html | truncate: 100 }}</p>
+                          {%- endif -%}
+                        </div>
+                        <div class="mega-menu__auto-products">
+                          <div class="mega-menu__product-grid">
+                            {%- for product in col.products limit: 6 -%}
+                              <a href="{{ product.url }}" class="mega-menu__product-card">
+                                {%- if product.featured_image -%}
+                                  <div class="mega-menu__product-image">
+                                    <img src="{{ product.featured_image | image_url: width: 200, height: 200, crop: 'center' }}" alt="{{ product.title }}" width="200" height="200" loading="lazy">
+                                  </div>
+                                {%- endif -%}
+                                <span class="mega-menu__product-title">{{ product.title }}</span>
+                                <span class="mega-menu__product-price">{{ product.price | money }}</span>
+                              </a>
+                            {%- endfor -%}
+                          </div>
+                        </div>
+                      </div>
+                    {%- else -%}
+                      <div class="mega-menu__product-grid">
+                        {%- for product in col.products limit: 8 -%}
+                          <a href="{{ product.url }}" class="mega-menu__product-card">
+                            {%- if product.featured_image -%}
+                              <div class="mega-menu__product-image">
+                                <img src="{{ product.featured_image | image_url: width: 200, height: 200, crop: 'center' }}" alt="{{ product.title }}" width="200" height="200" loading="lazy">
+                              </div>
+                            {%- endif -%}
+                            <span class="mega-menu__product-title">{{ product.title }}</span>
+                            <span class="mega-menu__product-price">{{ product.price | money }}</span>
+                          </a>
+                        {%- endfor -%}
+                      </div>
+                    {%- endif -%}
+
+                    <div class="mega-menu__footer">
+                      <a href="{{ col.url }}" class="mega-menu__view-all">
+                        Shop All {{ col.title }} ({{ col.products_count }})
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {%- endfor -%}
+          </div>
+        </div>
+      </div>
+      {%- assign default_subnav_set = true -%}
+
+    {%- comment -%} === SOURCE B: Manual menu hierarchy (for non-catalog links with children) === {%- endcomment -%}
+    {%- elsif link.links.size > 0 -%}
       <div
         class="header__subnav {% unless default_subnav_set %}is-default is-visible{% endunless %}"
         data-subnav-panel="{{ forloop.index0 }}"
@@ -175,91 +260,6 @@
         </div>
       </div>
       {%- assign default_subnav_set = true -%}
-
-    {%- comment -%} === SOURCE B: Auto-generated catalog from store collections === {%- endcomment -%}
-    {%- elsif is_catalog_link -%}
-      <div
-        class="header__subnav {% unless default_subnav_set %}is-default is-visible{% endunless %}"
-        data-subnav-panel="{{ forloop.index0 }}"
-      >
-        <div class="page-width">
-          <div class="header__subnav-scroll">
-            {%- for col in collections -%}
-              {%- if col.handle == 'all' or col.products_count == 0 -%}
-                {%- continue -%}
-              {%- endif -%}
-
-              <div class="header__subnav-item" data-subnav-has-mega>
-                <a href="{{ col.url }}" class="header__subnav-link">
-                  {{ col.title }}
-                  <span class="header__subnav-chevron">{% render 'icon-chevron' %}</span>
-                </a>
-
-                <div class="mega-menu" data-mega-panel>
-                  <div class="page-width">
-                    {%- if col.image -%}
-                      <div class="mega-menu__auto-layout">
-                        <div class="mega-menu__auto-image">
-                          <a href="{{ col.url }}">
-                            <img
-                              src="{{ col.image | image_url: width: 500, height: 320, crop: 'center' }}"
-                              alt="{{ col.title }}"
-                              width="500"
-                              height="320"
-                              loading="lazy"
-                            >
-                          </a>
-                          <p class="mega-menu__auto-image-label">{{ col.title }}</p>
-                          {%- if col.description != blank -%}
-                            <p class="mega-menu__auto-image-desc">{{ col.description | strip_html | truncate: 100 }}</p>
-                          {%- endif -%}
-                        </div>
-                        <div class="mega-menu__auto-products">
-                          <div class="mega-menu__product-grid">
-                            {%- for product in col.products limit: 6 -%}
-                              <a href="{{ product.url }}" class="mega-menu__product-card">
-                                {%- if product.featured_image -%}
-                                  <div class="mega-menu__product-image">
-                                    <img src="{{ product.featured_image | image_url: width: 200, height: 200, crop: 'center' }}" alt="{{ product.title }}" width="200" height="200" loading="lazy">
-                                  </div>
-                                {%- endif -%}
-                                <span class="mega-menu__product-title">{{ product.title }}</span>
-                                <span class="mega-menu__product-price">{{ product.price | money }}</span>
-                              </a>
-                            {%- endfor -%}
-                          </div>
-                        </div>
-                      </div>
-                    {%- else -%}
-                      <div class="mega-menu__product-grid">
-                        {%- for product in col.products limit: 8 -%}
-                          <a href="{{ product.url }}" class="mega-menu__product-card">
-                            {%- if product.featured_image -%}
-                              <div class="mega-menu__product-image">
-                                <img src="{{ product.featured_image | image_url: width: 200, height: 200, crop: 'center' }}" alt="{{ product.title }}" width="200" height="200" loading="lazy">
-                              </div>
-                            {%- endif -%}
-                            <span class="mega-menu__product-title">{{ product.title }}</span>
-                            <span class="mega-menu__product-price">{{ product.price | money }}</span>
-                          </a>
-                        {%- endfor -%}
-                      </div>
-                    {%- endif -%}
-
-                    <div class="mega-menu__footer">
-                      <a href="{{ col.url }}" class="mega-menu__view-all">
-                        Shop All {{ col.title }} ({{ col.products_count }})
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            {%- endfor -%}
-          </div>
-        </div>
-      </div>
-      {%- assign default_subnav_set = true -%}
     {%- endif -%}
   {%- endfor -%}
 </header>
@@ -281,7 +281,28 @@
         {%- assign is_catalog_link = true -%}
       {%- endif -%}
 
-      {%- if link.links.size > 0 -%}
+      {%- if is_catalog_link -%}
+        {%- comment -%} Auto-generated from store collections (priority over manual children) {%- endcomment -%}
+        <div class="mobile-menu__group" data-mobile-accordion>
+          <button class="mobile-menu__link mobile-menu__link--parent" aria-expanded="false" data-mobile-accordion-trigger>
+            <span>{{ link.title }}</span>
+            <span class="mobile-menu__chevron">{% render 'icon-chevron' %}</span>
+          </button>
+          <div class="mobile-menu__submenu" data-mobile-accordion-content aria-hidden="true">
+            {%- for col in collections -%}
+              {%- if col.handle == 'all' or col.products_count == 0 -%}
+                {%- continue -%}
+              {%- endif -%}
+              <a href="{{ col.url }}" class="mobile-menu__sublink">
+                {{ col.title }}
+                <span class="mobile-menu__count">{{ col.products_count }}</span>
+              </a>
+            {%- endfor -%}
+            <a href="/collections" class="mobile-menu__sublink" style="color: var(--color-primary); font-weight: 600;">View All Collections</a>
+          </div>
+        </div>
+
+      {%- elsif link.links.size > 0 -%}
         {%- comment -%} Manual hierarchy {%- endcomment -%}
         <div class="mobile-menu__group" data-mobile-accordion>
           <button class="mobile-menu__link mobile-menu__link--parent" aria-expanded="false" data-mobile-accordion-trigger>
@@ -307,27 +328,6 @@
                 <a href="{{ child_link.url }}" class="mobile-menu__sublink">{{ child_link.title }}</a>
               {%- endif -%}
             {%- endfor -%}
-          </div>
-        </div>
-
-      {%- elsif is_catalog_link -%}
-        {%- comment -%} Auto-generated from store collections {%- endcomment -%}
-        <div class="mobile-menu__group" data-mobile-accordion>
-          <button class="mobile-menu__link mobile-menu__link--parent" aria-expanded="false" data-mobile-accordion-trigger>
-            <span>{{ link.title }}</span>
-            <span class="mobile-menu__chevron">{% render 'icon-chevron' %}</span>
-          </button>
-          <div class="mobile-menu__submenu" data-mobile-accordion-content aria-hidden="true">
-            {%- for col in collections -%}
-              {%- if col.handle == 'all' or col.products_count == 0 -%}
-                {%- continue -%}
-              {%- endif -%}
-              <a href="{{ col.url }}" class="mobile-menu__sublink">
-                {{ col.title }}
-                <span class="mobile-menu__count">{{ col.products_count }}</span>
-              </a>
-            {%- endfor -%}
-            <a href="/collections" class="mobile-menu__sublink" style="color: var(--color-primary); font-weight: 600;">View All Collections</a>
           </div>
         </div>
 

@@ -1052,6 +1052,50 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--color-primary);
 }
 
+/* Mega menu: auto-generated layout (image + products) */
+.mega-menu__auto-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 989px) {
+  .mega-menu__auto-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mega-menu__auto-image {
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.mega-menu__auto-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius);
+}
+
+.mega-menu__auto-image-label {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  margin-top: 0.5rem;
+}
+
+.mega-menu__auto-image-desc {
+  font-size: 0.75rem;
+  color: var(--color-muted-fg);
+  margin-top: 0.25rem;
+  line-height: 1.5;
+}
+
+.mega-menu__auto-products {
+  min-width: 0;
+}
+
 /* --- Mobile Menu --- */
 .mobile-menu {
   position: fixed;

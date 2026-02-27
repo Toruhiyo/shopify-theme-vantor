@@ -1,5 +1,5 @@
 {%- liquid
-  assign collection = section.settings.collection
+  assign collection = section.settings.collection | default: collections.all
   assign limit = section.settings.products_count
   assign show_vendor = section.settings.show_vendor
 -%}
@@ -13,34 +13,16 @@
         {%- endif -%}
         <h2 class="section-header__title h2">{{ section.settings.title }}</h2>
       </div>
-      {%- if collection != blank -%}
-        <a href="{{ collection.url }}" class="btn btn--outline btn--sm">{{ 'sections.accessories.view_all' | t }}</a>
-      {%- endif -%}
+      <a href="{{ collection.url }}" class="btn btn--outline btn--sm">{{ 'sections.accessories.view_all' | t }}</a>
     </div>
 
     <div class="carousel" data-carousel>
       <div class="carousel__track">
-        {%- if collection != blank -%}
-          {%- for product in collection.products limit: limit -%}
-            <div class="carousel__slide">
-              {% render 'product-card', product: product, show_vendor: show_vendor, aspect_ratio: '1 / 1' %}
-            </div>
-          {%- endfor -%}
-        {%- else -%}
-          {%- for i in (1..limit) -%}
-            <div class="carousel__slide">
-              <div class="product-card">
-                <div class="product-card__media">
-                  {{ 'product-' | append: forloop.index | placeholder_svg_tag: 'placeholder' }}
-                </div>
-                <div class="product-card__info">
-                  <h3 class="product-card__title">Accessory {{ forloop.index }}</h3>
-                  <div class="product-card__price"><span>$29.00</span></div>
-                </div>
-              </div>
-            </div>
-          {%- endfor -%}
-        {%- endif -%}
+        {%- for product in collection.products limit: limit -%}
+          <div class="carousel__slide">
+            {% render 'product-card', product: product, show_vendor: show_vendor, aspect_ratio: '1 / 1' %}
+          </div>
+        {%- endfor -%}
       </div>
     </div>
   </div>

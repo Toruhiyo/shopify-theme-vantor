@@ -738,11 +738,22 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     align-items: center;
     gap: 0;
+    flex: 1;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    mask-image: linear-gradient(to right, transparent 0, black 0.5rem, black calc(100% - 0.5rem), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, black 0.5rem, black calc(100% - 0.5rem), transparent 100%);
+  }
+  .header__nav::-webkit-scrollbar {
+    display: none;
   }
 }
 
 .header__nav-item {
   position: relative;
+  flex-shrink: 0;
 }
 
 .header__nav-link {
@@ -808,6 +819,7 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   align-items: center;
   gap: 0.25rem;
+  flex-shrink: 0;
 }
 
 .header__icon-btn {

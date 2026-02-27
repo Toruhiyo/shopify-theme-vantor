@@ -1,0 +1,94 @@
+{%- liquid
+  assign collection = section.settings.collection
+  assign limit = section.settings.products_count
+  assign show_vendor = section.settings.show_vendor
+-%}
+
+<section class="section-spacing">
+  <div class="page-width">
+    <div class="section-header">
+      <div>
+        {%- if section.settings.subtitle != blank -%}
+          <p class="section-header__subtitle">{{ section.settings.subtitle }}</p>
+        {%- endif -%}
+        <h2 class="section-header__title h2">{{ section.settings.title }}</h2>
+      </div>
+      {%- if collection != blank -%}
+        <a href="{{ collection.url }}" class="btn btn--outline btn--sm">{{ 'sections.accessories.view_all' | t }}</a>
+      {%- endif -%}
+    </div>
+
+    <div class="carousel" data-carousel>
+      <div class="carousel__track">
+        {%- if collection != blank -%}
+          {%- for product in collection.products limit: limit -%}
+            <div class="carousel__slide">
+              {% render 'product-card', product: product, show_vendor: show_vendor, aspect_ratio: '1 / 1' %}
+            </div>
+          {%- endfor -%}
+        {%- else -%}
+          {%- for i in (1..limit) -%}
+            <div class="carousel__slide">
+              <div class="product-card">
+                <div class="product-card__media">
+                  {{ 'product-' | append: forloop.index | placeholder_svg_tag: 'placeholder' }}
+                </div>
+                <div class="product-card__info">
+                  <h3 class="product-card__title">Accessory {{ forloop.index }}</h3>
+                  <div class="product-card__price"><span>$29.00</span></div>
+                </div>
+              </div>
+            </div>
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Accessories upsell",
+  "tag": "section",
+  "class": "accessories-upsell-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Complete Your Setup"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Accessories & Add-ons"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_count",
+      "label": "Products to show",
+      "min": 4,
+      "max": 12,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Accessories upsell"
+    }
+  ]
+}
+{% endschema %}

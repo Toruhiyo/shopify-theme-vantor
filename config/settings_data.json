@@ -1,0 +1,80 @@
+{
+  "current": {
+    "color_background": "#0e1011",
+    "color_foreground": "#fafafa",
+    "color_card": "#151719",
+    "color_muted": "#1e2124",
+    "color_muted_foreground": "#a8adb8",
+    "color_border": "#282c31",
+    "color_primary": "#7c3aed",
+    "color_primary_foreground": "#ffffff",
+    "color_success": "#22c55e",
+    "color_warning": "#eab308",
+    "font_body_size": 15,
+    "font_heading_scale": 100,
+    "page_width": 1400,
+    "spacing_grid": 48,
+    "border_radius": 4,
+    "cart_type": "drawer",
+    "cart_upsell_enabled": true,
+    "sections": {
+      "header-group": {
+        "type": "header",
+        "sections": {
+          "announcement-bar": {
+            "type": "announcement-bar",
+            "settings": {
+              "text": "FREE SHIPPING ON ORDERS OVER $99 — SHOP NOW"
+            }
+          },
+          "header": {
+            "type": "header",
+            "settings": {}
+          }
+        },
+        "order": ["announcement-bar", "header"]
+      },
+      "footer-group": {
+        "type": "footer",
+        "sections": {
+          "footer": {
+            "type": "footer",
+            "settings": {
+              "show_trust_row": true
+            },
+            "blocks": {
+              "menu-1": {
+                "type": "menu",
+                "settings": {
+                  "heading": "Shop"
+                }
+              },
+              "menu-2": {
+                "type": "menu",
+                "settings": {
+                  "heading": "Support"
+                }
+              },
+              "text": {
+                "type": "text",
+                "settings": {
+                  "heading": "Vantor",
+                  "text": "<p>Premium gaming gear and peripherals for competitive players.</p>"
+                }
+              },
+              "newsletter": {
+                "type": "newsletter",
+                "settings": {
+                  "heading": "Stay in the loop",
+                  "text": "Get drops, deals, and new gear first."
+                }
+              }
+            },
+            "block_order": ["menu-1", "menu-2", "text", "newsletter"]
+          }
+        },
+        "order": ["footer"]
+      }
+    }
+  }
+}

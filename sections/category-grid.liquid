@@ -1,0 +1,115 @@
+<section class="section-spacing">
+  <div class="page-width">
+    {%- if section.settings.title != blank -%}
+      <div class="section-header">
+        <div>
+          {%- if section.settings.subtitle != blank -%}
+            <p class="section-header__subtitle">{{ section.settings.subtitle }}</p>
+          {%- endif -%}
+          <h2 class="section-header__title h2">{{ section.settings.title }}</h2>
+        </div>
+      </div>
+    {%- endif -%}
+
+    <div class="grid grid--{{ section.settings.columns }}">
+      {%- for block in section.blocks -%}
+        <a href="{{ block.settings.link }}" class="category-tile" {{ block.shopify_attributes }}>
+          <div class="category-tile__media">
+            {%- if block.settings.image != blank -%}
+              <img
+                src="{{ block.settings.image | image_url: width: 800 }}"
+                alt="{{ block.settings.title | escape }}"
+                width="800"
+                height="600"
+                loading="lazy"
+              >
+            {%- else -%}
+              {{ 'collection-' | append: forloop.index | placeholder_svg_tag: 'placeholder' }}
+            {%- endif -%}
+          </div>
+          <div class="category-tile__overlay"></div>
+          <div class="category-tile__content">
+            <h3 class="category-tile__title">{{ block.settings.title }}</h3>
+            {%- if block.settings.count != blank -%}
+              <span class="category-tile__count">{{ block.settings.count }}</span>
+            {%- endif -%}
+          </div>
+        </a>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Category grid",
+  "tag": "section",
+  "class": "category-grid-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Browse"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Shop by Category"
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "Columns",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ],
+      "default": "3"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category tile",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Category"
+        },
+        {
+          "type": "text",
+          "id": "count",
+          "label": "Subtitle/Count",
+          "default": "24 products"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Category grid",
+      "blocks": [
+        { "type": "category", "settings": { "title": "Keyboards" } },
+        { "type": "category", "settings": { "title": "Mice" } },
+        { "type": "category", "settings": { "title": "Headsets" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

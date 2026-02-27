@@ -1,0 +1,42 @@
+{
+  "type": "footer",
+  "name": "Footer group",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "settings": {
+        "show_trust_row": true
+      },
+      "blocks": {
+        "menu-1": {
+          "type": "menu",
+          "settings": {
+            "heading": "Shop"
+          }
+        },
+        "menu-2": {
+          "type": "menu",
+          "settings": {
+            "heading": "Support"
+          }
+        },
+        "text": {
+          "type": "text",
+          "settings": {
+            "heading": "Vantor",
+            "text": "<p>Premium gaming gear and peripherals for competitive players.</p>"
+          }
+        },
+        "newsletter": {
+          "type": "newsletter",
+          "settings": {
+            "heading": "Stay in the loop",
+            "text": "Get drops, deals, and new gear first."
+          }
+        }
+      },
+      "block_order": ["menu-1", "menu-2", "text", "newsletter"]
+    }
+  },
+  "order": ["footer"]
+}

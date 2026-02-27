@@ -83,17 +83,17 @@
               </div>
               <div class="header__support-group">
                 <span class="header__support-heading">Policies</span>
-                {%- if policies.shipping_policy != blank -%}
-                  <a href="{{ policies.shipping_policy.url }}" class="header__support-link">Shipping Policy</a>
+                {%- if shop.shipping_policy != blank -%}
+                  <a href="{{ shop.shipping_policy.url }}" class="header__support-link">Shipping Policy</a>
                 {%- endif -%}
-                {%- if policies.refund_policy != blank -%}
-                  <a href="{{ policies.refund_policy.url }}" class="header__support-link">Returns &amp; Refunds</a>
+                {%- if shop.refund_policy != blank -%}
+                  <a href="{{ shop.refund_policy.url }}" class="header__support-link">Returns &amp; Refunds</a>
                 {%- endif -%}
-                {%- if policies.terms_of_service != blank -%}
-                  <a href="{{ policies.terms_of_service.url }}" class="header__support-link">Terms of Service</a>
+                {%- if shop.terms_of_service != blank -%}
+                  <a href="{{ shop.terms_of_service.url }}" class="header__support-link">Terms of Service</a>
                 {%- endif -%}
-                {%- if policies.privacy_policy != blank -%}
-                  <a href="{{ policies.privacy_policy.url }}" class="header__support-link">Privacy Policy</a>
+                {%- if shop.privacy_policy != blank -%}
+                  <a href="{{ shop.privacy_policy.url }}" class="header__support-link">Privacy Policy</a>
                 {%- endif -%}
               </div>
             </div>
@@ -158,17 +158,17 @@
         <a href="/pages/contact" class="mobile-menu__sublink">Contact Us</a>
         <a href="/pages/faq" class="mobile-menu__sublink">FAQ</a>
         <span class="mobile-menu__sublabel">Policies</span>
-        {%- if policies.shipping_policy != blank -%}
-          <a href="{{ policies.shipping_policy.url }}" class="mobile-menu__grandchild-link">Shipping Policy</a>
+        {%- if shop.shipping_policy != blank -%}
+          <a href="{{ shop.shipping_policy.url }}" class="mobile-menu__grandchild-link">Shipping Policy</a>
         {%- endif -%}
-        {%- if policies.refund_policy != blank -%}
-          <a href="{{ policies.refund_policy.url }}" class="mobile-menu__grandchild-link">Returns &amp; Refunds</a>
+        {%- if shop.refund_policy != blank -%}
+          <a href="{{ shop.refund_policy.url }}" class="mobile-menu__grandchild-link">Returns &amp; Refunds</a>
         {%- endif -%}
-        {%- if policies.terms_of_service != blank -%}
-          <a href="{{ policies.terms_of_service.url }}" class="mobile-menu__grandchild-link">Terms of Service</a>
+        {%- if shop.terms_of_service != blank -%}
+          <a href="{{ shop.terms_of_service.url }}" class="mobile-menu__grandchild-link">Terms of Service</a>
         {%- endif -%}
-        {%- if policies.privacy_policy != blank -%}
-          <a href="{{ policies.privacy_policy.url }}" class="mobile-menu__grandchild-link">Privacy Policy</a>
+        {%- if shop.privacy_policy != blank -%}
+          <a href="{{ shop.privacy_policy.url }}" class="mobile-menu__grandchild-link">Privacy Policy</a>
         {%- endif -%}
       </div>
     </div>

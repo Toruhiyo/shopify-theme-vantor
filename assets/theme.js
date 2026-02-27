@@ -56,6 +56,103 @@
     }
   }
 
+  /* --- Desktop Navigation (sub-nav switching + mega menus) --- */
+  class DesktopNav {
+    constructor() {
+      this.header = document.querySelector('[data-header]');
+      if (!this.header) return;
+
+      this.navParents = this.header.querySelectorAll('[data-nav-parent]');
+      this.subnavPanels = this.header.querySelectorAll('[data-subnav-panel]');
+      this.subnavItems = this.header.querySelectorAll('[data-subnav-has-mega]');
+      this.activeSubnav = null;
+      this.activeMega = null;
+      this.hoverTimeout = null;
+      this.leaveTimeout = null;
+
+      this.bindNavParents();
+      this.bindSubnavItems();
+      this.bindHeaderLeave();
+    }
+
+    bindNavParents() {
+      this.navParents.forEach(item => {
+        const idx = item.dataset.navParent;
+
+        item.addEventListener('mouseenter', () => {
+          clearTimeout(this.leaveTimeout);
+          this.showSubnav(idx);
+        });
+      });
+    }
+
+    bindSubnavItems() {
+      this.subnavItems.forEach(item => {
+        item.addEventListener('mouseenter', () => {
+          clearTimeout(this.hoverTimeout);
+          this.hoverTimeout = setTimeout(() => this.showMega(item), 80);
+        });
+
+        item.addEventListener('mouseleave', () => {
+          clearTimeout(this.hoverTimeout);
+        });
+      });
+
+      this.subnavPanels.forEach(panel => {
+        panel.addEventListener('mouseleave', () => {
+          this.hideMega();
+        });
+      });
+    }
+
+    bindHeaderLeave() {
+      this.header.addEventListener('mouseleave', () => {
+        this.leaveTimeout = setTimeout(() => {
+          this.hideMega();
+          this.resetToDefault();
+        }, 200);
+      });
+
+      this.header.addEventListener('mouseenter', () => {
+        clearTimeout(this.leaveTimeout);
+      });
+    }
+
+    showSubnav(idx) {
+      this.hideMega();
+      this.subnavPanels.forEach(panel => {
+        panel.classList.toggle('is-visible', panel.dataset.subnavPanel === idx);
+      });
+      this.navParents.forEach(item => {
+        item.classList.toggle('is-subnav-active', item.dataset.navParent === idx);
+      });
+      this.activeSubnav = idx;
+    }
+
+    resetToDefault() {
+      this.navParents.forEach(item => item.classList.remove('is-subnav-active'));
+      this.subnavPanels.forEach(panel => {
+        panel.classList.toggle('is-visible', panel.classList.contains('is-default'));
+      });
+      this.activeSubnav = null;
+    }
+
+    showMega(item) {
+      if (this.activeMega) {
+        this.activeMega.classList.remove('is-mega-active');
+      }
+      item.classList.add('is-mega-active');
+      this.activeMega = item;
+    }
+
+    hideMega() {
+      if (this.activeMega) {
+        this.activeMega.classList.remove('is-mega-active');
+        this.activeMega = null;
+      }
+    }
+  }
+
   /* --- Mobile Menu --- */
   class MobileMenu {
     constructor() {
@@ -333,6 +430,7 @@
   /* --- Initialize --- */
   function init() {
     new CartDrawer();
+    new DesktopNav();
     new MobileMenu();
     new SearchOverlay();
     new StickyHeader();

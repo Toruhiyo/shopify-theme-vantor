@@ -1,164 +1,188 @@
+{%- assign menu = section.settings.menu -%}
+
 <header class="header" data-header>
-  <div class="page-width">
-    <div class="header__inner">
-      <button class="header__icon-btn header__menu-toggle" data-menu-toggle aria-label="{{ 'header.menu' | t }}" style="display:none;">
-        {% render 'icon-menu' %}
-      </button>
+  {%- comment -%} Row 1: Primary navigation {%- endcomment -%}
+  <div class="header__primary">
+    <div class="page-width">
+      <div class="header__inner">
+        <button class="header__icon-btn header__menu-toggle" data-menu-toggle aria-label="{{ 'header.menu' | t }}">
+          {% render 'icon-menu' %}
+        </button>
 
-      <div class="header__logo">
-        <a href="/">
-          {%- if section.settings.logo != blank -%}
-            <img
-              src="{{ section.settings.logo | image_url: width: 200 }}"
-              alt="{{ shop.name }}"
-              width="200"
-              height="40"
-              loading="eager"
+        <div class="header__logo">
+          <a href="/">
+            {%- if section.settings.logo != blank -%}
+              <img
+                src="{{ section.settings.logo | image_url: width: 200 }}"
+                alt="{{ shop.name }}"
+                width="200"
+                height="40"
+                loading="eager"
+              >
+            {%- else -%}
+              {{ shop.name }}
+            {%- endif -%}
+          </a>
+        </div>
+
+        <nav class="header__nav" role="navigation" aria-label="{{ 'header.navigation' | t }}">
+          {%- for link in menu.links -%}
+            <div
+              class="header__nav-item"
+              {% if link.links.size > 0 %}
+                data-nav-parent="{{ forloop.index0 }}"
+              {% endif %}
             >
-          {%- else -%}
-            {{ shop.name }}
-          {%- endif -%}
-        </a>
+              <a
+                href="{{ link.url }}"
+                class="header__nav-link {% if link.active %}is-active{% endif %}"
+              >
+                {{ link.title }}
+                {%- if link.links.size > 0 -%}
+                  <span class="header__nav-chevron">{% render 'icon-chevron' %}</span>
+                {%- endif -%}
+              </a>
+            </div>
+          {%- endfor -%}
+        </nav>
+
+        <div class="header__icons">
+          <button class="header__icon-btn" data-search-toggle aria-label="{{ 'header.search' | t }}">
+            {% render 'icon-search' %}
+          </button>
+          <a href="{{ routes.account_url }}" class="header__icon-btn" aria-label="{{ 'header.account' | t }}">
+            {% render 'icon-account' %}
+          </a>
+          <button class="header__icon-btn" data-cart-toggle aria-label="{{ 'header.cart' | t }}">
+            {% render 'icon-cart' %}
+            {%- if cart.item_count > 0 -%}
+              <span class="header__cart-count">{{ cart.item_count }}</span>
+            {%- endif -%}
+          </button>
+        </div>
       </div>
+    </div>
+  </div>
 
-      <nav class="header__nav" role="navigation" aria-label="{{ 'header.navigation' | t }}">
-        {%- for link in section.settings.menu.links -%}
-          {%- assign has_children = false -%}
-          {%- if link.links.size > 0 -%}
-            {%- assign has_children = true -%}
-          {%- endif -%}
-
-          <div class="header__nav-item" {% if has_children %}aria-haspopup="true"{% endif %}>
-            <a href="{{ link.url }}" class="header__nav-link {% if link.active %}is-active{% endif %}">
-              {{ link.title }}
-              {%- if has_children -%}
-                <span class="header__nav-chevron">{% render 'icon-chevron' %}</span>
+  {%- comment -%} Row 2: Category sub-nav panels (one per top-level parent with children) {%- endcomment -%}
+  {%- assign default_subnav_set = false -%}
+  {%- for link in menu.links -%}
+    {%- if link.links.size > 0 -%}
+      <div
+        class="header__subnav {% unless default_subnav_set %}is-default is-visible{% endunless %}"
+        data-subnav-panel="{{ forloop.index0 }}"
+      >
+        <div class="page-width">
+          <div class="header__subnav-scroll">
+            {%- for child_link in link.links -%}
+              {%- assign child_has_children = false -%}
+              {%- if child_link.links.size > 0 -%}
+                {%- assign child_has_children = true -%}
               {%- endif -%}
-            </a>
 
-            {%- if has_children -%}
-              <div class="mega-menu" data-mega-menu>
-                <div class="page-width">
-                  <div class="mega-menu__layout">
-                    <div class="mega-menu__columns">
-                      {%- for child_link in link.links -%}
-                        {%- assign is_collection = false -%}
-                        {%- assign child_collection = nil -%}
-                        {%- if child_link.type == 'collection_link' -%}
-                          {%- assign is_collection = true -%}
-                          {%- assign child_collection = child_link.object -%}
-                        {%- endif -%}
+              {%- assign is_collection = false -%}
+              {%- assign child_collection = nil -%}
+              {%- if child_link.type == 'collection_link' -%}
+                {%- assign is_collection = true -%}
+                {%- assign child_collection = child_link.object -%}
+              {%- endif -%}
 
-                        <div class="mega-menu__column">
-                          <a href="{{ child_link.url }}" class="mega-menu__column-header">
-                            {%- if is_collection and child_collection.image -%}
-                              <div class="mega-menu__column-image">
-                                <img
-                                  src="{{ child_collection.image | image_url: width: 400 }}"
-                                  alt="{{ child_collection.title }}"
-                                  width="400"
-                                  height="250"
-                                  loading="lazy"
-                                >
-                              </div>
-                            {%- endif -%}
-                            <span class="mega-menu__column-title">{{ child_link.title }}</span>
-                            {%- if is_collection and child_collection.products_count > 0 -%}
-                              <span class="mega-menu__column-count">{{ child_collection.products_count }} {{ child_collection.products_count | pluralize: 'product', 'products' }}</span>
-                            {%- endif -%}
-                          </a>
+              <div
+                class="header__subnav-item"
+                {% if child_has_children or is_collection %}data-subnav-has-mega{% endif %}
+              >
+                <a href="{{ child_link.url }}" class="header__subnav-link">
+                  {{ child_link.title }}
+                  {%- if child_has_children or is_collection -%}
+                    <span class="header__subnav-chevron">{% render 'icon-chevron' %}</span>
+                  {%- endif -%}
+                </a>
 
-                          {%- if child_link.links.size > 0 -%}
-                            <ul class="mega-menu__links">
-                              {%- for grandchild_link in child_link.links -%}
-                                <li>
-                                  <a href="{{ grandchild_link.url }}" class="mega-menu__link">
-                                    {{ grandchild_link.title }}
-                                    {%- if grandchild_link.type == 'collection_link' and grandchild_link.object.products_count > 0 -%}
-                                      <span class="mega-menu__link-count">{{ grandchild_link.object.products_count }}</span>
-                                    {%- endif -%}
-                                  </a>
-                                </li>
-                              {%- endfor -%}
-                              <li>
-                                <a href="{{ child_link.url }}" class="mega-menu__link mega-menu__link--all">View all {{ child_link.title }}</a>
-                              </li>
-                            </ul>
-                          {%- else -%}
-                            <ul class="mega-menu__links">
-                              {%- if is_collection -%}
-                                {%- for product in child_collection.products limit: 5 -%}
+                {%- comment -%} Mega menu: grandchild links organized in columns {%- endcomment -%}
+                {%- if child_has_children -%}
+                  <div class="mega-menu" data-mega-panel>
+                    <div class="page-width">
+                      <div class="mega-menu__grid">
+                        {%- for grandchild_link in child_link.links -%}
+                          <div class="mega-menu__column">
+                            <a href="{{ grandchild_link.url }}" class="mega-menu__column-title">
+                              {{ grandchild_link.title }}
+                            </a>
+
+                            {%- if grandchild_link.links.size > 0 -%}
+                              <ul class="mega-menu__links">
+                                {%- for ggchild in grandchild_link.links -%}
+                                  <li>
+                                    <a href="{{ ggchild.url }}" class="mega-menu__link">{{ ggchild.title }}</a>
+                                  </li>
+                                {%- endfor -%}
+                              </ul>
+                            {%- elsif grandchild_link.type == 'collection_link' -%}
+                              <ul class="mega-menu__links">
+                                {%- for product in grandchild_link.object.products limit: 6 -%}
                                   <li>
                                     <a href="{{ product.url }}" class="mega-menu__link">{{ product.title }}</a>
                                   </li>
                                 {%- endfor -%}
-                                {%- if child_collection.products.size > 5 -%}
-                                  <li>
-                                    <a href="{{ child_link.url }}" class="mega-menu__link mega-menu__link--all">View all ({{ child_collection.products_count }})</a>
-                                  </li>
-                                {%- endif -%}
-                              {%- else -%}
-                                <li>
-                                  <a href="{{ child_link.url }}" class="mega-menu__link mega-menu__link--all">{{ child_link.title }}</a>
-                                </li>
-                              {%- endif -%}
-                            </ul>
-                          {%- endif -%}
-                        </div>
-                      {%- endfor -%}
-                    </div>
-
-                    {%- if section.settings.mega_menu_featured_collection != blank -%}
-                      {%- assign featured = section.settings.mega_menu_featured_collection -%}
-                      {%- if featured.products.size > 0 -%}
-                        <div class="mega-menu__featured">
-                          <p class="mega-menu__featured-label">Trending Now</p>
-                          <div class="mega-menu__featured-products">
-                            {%- for product in featured.products limit: 2 -%}
-                              <a href="{{ product.url }}" class="mega-menu__featured-card">
-                                {%- if product.featured_image -%}
-                                  <img
-                                    src="{{ product.featured_image | image_url: width: 300, height: 300, crop: 'center' }}"
-                                    alt="{{ product.title }}"
-                                    width="300"
-                                    height="300"
-                                    loading="lazy"
-                                  >
-                                {%- endif -%}
-                                <span class="mega-menu__featured-title">{{ product.title }}</span>
-                                <span class="mega-menu__featured-price">{{ product.price | money }}</span>
-                              </a>
-                            {%- endfor -%}
+                              </ul>
+                            {%- endif -%}
                           </div>
-                        </div>
-                      {%- endif -%}
-                    {%- endif -%}
+                        {%- endfor -%}
+                      </div>
+
+                      <div class="mega-menu__footer">
+                        <a href="{{ child_link.url }}" class="mega-menu__view-all">
+                          Shop All {{ child_link.title }}
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                        </a>
+                      </div>
+                    </div>
                   </div>
-                </div>
+
+                {%- comment -%} Mega menu: auto-populate from collection products {%- endcomment -%}
+                {%- elsif is_collection -%}
+                  <div class="mega-menu" data-mega-panel>
+                    <div class="page-width">
+                      <div class="mega-menu__product-grid">
+                        {%- for product in child_collection.products limit: 8 -%}
+                          <a href="{{ product.url }}" class="mega-menu__product-card">
+                            {%- if product.featured_image -%}
+                              <div class="mega-menu__product-image">
+                                <img
+                                  src="{{ product.featured_image | image_url: width: 200, height: 200, crop: 'center' }}"
+                                  alt="{{ product.title }}"
+                                  width="200"
+                                  height="200"
+                                  loading="lazy"
+                                >
+                              </div>
+                            {%- endif -%}
+                            <span class="mega-menu__product-title">{{ product.title }}</span>
+                            <span class="mega-menu__product-price">{{ product.price | money }}</span>
+                          </a>
+                        {%- endfor -%}
+                      </div>
+
+                      <div class="mega-menu__footer">
+                        <a href="{{ child_link.url }}" class="mega-menu__view-all">
+                          Shop All {{ child_link.title }}
+                          {%- if child_collection.products_count > 0 -%}
+                            ({{ child_collection.products_count }})
+                          {%- endif -%}
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                {%- endif -%}
               </div>
-            {%- endif -%}
+            {%- endfor -%}
           </div>
-        {%- endfor -%}
-      </nav>
-
-      <div class="header__icons">
-        <button class="header__icon-btn" data-search-toggle aria-label="{{ 'header.search' | t }}">
-          {% render 'icon-search' %}
-        </button>
-
-        <a href="{{ routes.account_url }}" class="header__icon-btn" aria-label="{{ 'header.account' | t }}">
-          {% render 'icon-account' %}
-        </a>
-
-        <button class="header__icon-btn" data-cart-toggle aria-label="{{ 'header.cart' | t }}">
-          {% render 'icon-cart' %}
-          {%- if cart.item_count > 0 -%}
-            <span class="header__cart-count">{{ cart.item_count }}</span>
-          {%- endif -%}
-        </button>
+        </div>
       </div>
-    </div>
-  </div>
+      {%- assign default_subnav_set = true -%}
+    {%- endif -%}
+  {%- endfor -%}
 </header>
 
 {%- comment -%} Mobile Menu {%- endcomment -%}
@@ -171,7 +195,7 @@
   </div>
 
   <nav class="mobile-menu__nav">
-    {%- for link in section.settings.menu.links -%}
+    {%- for link in menu.links -%}
       {%- if link.links.size > 0 -%}
         <div class="mobile-menu__group" data-mobile-accordion>
           <button class="mobile-menu__link mobile-menu__link--parent" aria-expanded="false" data-mobile-accordion-trigger>
@@ -185,26 +209,39 @@
                 <div class="mobile-menu__subgroup" data-mobile-accordion>
                   <button class="mobile-menu__sublink mobile-menu__sublink--parent" aria-expanded="false" data-mobile-accordion-trigger>
                     <span>{{ child_link.title }}</span>
-                    {%- if child_link.type == 'collection_link' and child_link.object.products_count > 0 -%}
+                    <span class="mobile-menu__chevron">{% render 'icon-chevron' %}</span>
+                  </button>
+
+                  <div class="mobile-menu__submenu mobile-menu__submenu--nested" data-mobile-accordion-content aria-hidden="true">
+                    <a href="{{ child_link.url }}" class="mobile-menu__grandchild-link mobile-menu__grandchild-link--all">
+                      Shop All {{ child_link.title }}
+                    </a>
+                    {%- for grandchild_link in child_link.links -%}
+                      <a href="{{ grandchild_link.url }}" class="mobile-menu__grandchild-link">{{ grandchild_link.title }}</a>
+                    {%- endfor -%}
+                  </div>
+                </div>
+              {%- elsif child_link.type == 'collection_link' -%}
+                <div class="mobile-menu__subgroup" data-mobile-accordion>
+                  <button class="mobile-menu__sublink mobile-menu__sublink--parent" aria-expanded="false" data-mobile-accordion-trigger>
+                    <span>{{ child_link.title }}</span>
+                    {%- if child_link.object.products_count > 0 -%}
                       <span class="mobile-menu__count">{{ child_link.object.products_count }}</span>
                     {%- endif -%}
                     <span class="mobile-menu__chevron">{% render 'icon-chevron' %}</span>
                   </button>
 
                   <div class="mobile-menu__submenu mobile-menu__submenu--nested" data-mobile-accordion-content aria-hidden="true">
-                    <a href="{{ child_link.url }}" class="mobile-menu__grandchild-link">View all {{ child_link.title }}</a>
-                    {%- for grandchild_link in child_link.links -%}
-                      <a href="{{ grandchild_link.url }}" class="mobile-menu__grandchild-link">{{ grandchild_link.title }}</a>
+                    <a href="{{ child_link.url }}" class="mobile-menu__grandchild-link mobile-menu__grandchild-link--all">
+                      Shop All {{ child_link.title }}
+                    </a>
+                    {%- for product in child_link.object.products limit: 6 -%}
+                      <a href="{{ product.url }}" class="mobile-menu__grandchild-link">{{ product.title }}</a>
                     {%- endfor -%}
                   </div>
                 </div>
               {%- else -%}
-                <a href="{{ child_link.url }}" class="mobile-menu__sublink">
-                  {{ child_link.title }}
-                  {%- if child_link.type == 'collection_link' and child_link.object.products_count > 0 -%}
-                    <span class="mobile-menu__count">{{ child_link.object.products_count }}</span>
-                  {%- endif -%}
-                </a>
+                <a href="{{ child_link.url }}" class="mobile-menu__sublink">{{ child_link.title }}</a>
               {%- endif -%}
             {%- endfor -%}
           </div>
@@ -254,13 +291,7 @@
       "id": "menu",
       "label": "Navigation menu",
       "default": "main-menu",
-      "info": "Build your catalog hierarchy in Online Store > Navigation. Use collections as links for dynamic images and product counts."
-    },
-    {
-      "type": "collection",
-      "id": "mega_menu_featured_collection",
-      "label": "Mega menu — Featured collection",
-      "info": "Show 2 trending products in the mega menu dropdown."
+      "info": "Build your catalog in Online Store > Navigation. Level 1 = top nav, Level 2 = category tabs, Level 3 = mega menu columns. Use collections for auto-populated product links."
     }
   ]
 }

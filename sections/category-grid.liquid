@@ -13,12 +13,20 @@
 
     <div class="grid grid--{{ section.settings.columns }}">
       {%- for block in section.blocks -%}
-        <a href="{{ block.settings.link }}" class="category-tile" {{ block.shopify_attributes }}>
+        {%- liquid
+          assign tile_collection = block.settings.collection
+          assign tile_title = block.settings.title_override | default: tile_collection.title
+          assign tile_image = block.settings.image_override | default: tile_collection.image
+          assign tile_url = tile_collection.url | default: '#'
+          assign tile_count = tile_collection.products_count
+        -%}
+
+        <a href="{{ tile_url }}" class="category-tile" {{ block.shopify_attributes }}>
           <div class="category-tile__media">
-            {%- if block.settings.image != blank -%}
+            {%- if tile_image != blank -%}
               <img
-                src="{{ block.settings.image | image_url: width: 800 }}"
-                alt="{{ block.settings.title | escape }}"
+                src="{{ tile_image | image_url: width: 800 }}"
+                alt="{{ tile_title | escape }}"
                 width="800"
                 height="600"
                 loading="lazy"
@@ -29,9 +37,9 @@
           </div>
           <div class="category-tile__overlay"></div>
           <div class="category-tile__content">
-            <h3 class="category-tile__title">{{ block.settings.title }}</h3>
-            {%- if block.settings.count != blank -%}
-              <span class="category-tile__count">{{ block.settings.count }}</span>
+            <h3 class="category-tile__title">{{ tile_title }}</h3>
+            {%- if tile_count != blank -%}
+              <span class="category-tile__count">{{ tile_count }} {{ 'collections.products' | t }}</span>
             {%- endif -%}
           </div>
         </a>
@@ -76,26 +84,21 @@
       "name": "Category tile",
       "settings": [
         {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "text",
+          "id": "title_override",
+          "label": "Title override",
+          "info": "Leave blank to use the collection title"
+        },
+        {
           "type": "image_picker",
-          "id": "image",
-          "label": "Image"
-        },
-        {
-          "type": "text",
-          "id": "title",
-          "label": "Title",
-          "default": "Category"
-        },
-        {
-          "type": "text",
-          "id": "count",
-          "label": "Subtitle/Count",
-          "default": "24 products"
-        },
-        {
-          "type": "url",
-          "id": "link",
-          "label": "Link"
+          "id": "image_override",
+          "label": "Image override",
+          "info": "Leave blank to use the collection image"
         }
       ]
     }
@@ -105,9 +108,9 @@
     {
       "name": "Category grid",
       "blocks": [
-        { "type": "category", "settings": { "title": "Keyboards" } },
-        { "type": "category", "settings": { "title": "Mice" } },
-        { "type": "category", "settings": { "title": "Headsets" } }
+        { "type": "category" },
+        { "type": "category" },
+        { "type": "category" }
       ]
     }
   ]

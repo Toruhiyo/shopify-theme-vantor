@@ -29,9 +29,9 @@
         "columns": "3"
       },
       "blocks": {
-        "c1": { "type": "category", "settings": { "title": "Keyboards", "count": "24 products" } },
-        "c2": { "type": "category", "settings": { "title": "Mice", "count": "18 products" } },
-        "c3": { "type": "category", "settings": { "title": "Headsets", "count": "12 products" } }
+        "c1": { "type": "category", "settings": {} },
+        "c2": { "type": "category", "settings": {} },
+        "c3": { "type": "category", "settings": {} }
       },
       "block_order": ["c1", "c2", "c3"]
     },

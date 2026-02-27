@@ -42,6 +42,36 @@
         </nav>
 
         <div class="header__icons">
+          <div class="header__support" data-support-dropdown>
+            <button class="header__support-trigger" aria-expanded="false">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <span class="header__support-label">Support</span>
+              <span class="header__nav-chevron">{% render 'icon-chevron' %}</span>
+            </button>
+            <div class="header__support-dropdown">
+              <div class="header__support-group">
+                <span class="header__support-heading">Help</span>
+                <a href="/pages/contact" class="header__support-link">Contact Us</a>
+                <a href="/pages/faq" class="header__support-link">FAQ</a>
+              </div>
+              <div class="header__support-group">
+                <span class="header__support-heading">Policies</span>
+                {%- if policies.shipping_policy != blank -%}
+                  <a href="{{ policies.shipping_policy.url }}" class="header__support-link">Shipping Policy</a>
+                {%- endif -%}
+                {%- if policies.refund_policy != blank -%}
+                  <a href="{{ policies.refund_policy.url }}" class="header__support-link">Returns &amp; Refunds</a>
+                {%- endif -%}
+                {%- if policies.terms_of_service != blank -%}
+                  <a href="{{ policies.terms_of_service.url }}" class="header__support-link">Terms of Service</a>
+                {%- endif -%}
+                {%- if policies.privacy_policy != blank -%}
+                  <a href="{{ policies.privacy_policy.url }}" class="header__support-link">Privacy Policy</a>
+                {%- endif -%}
+              </div>
+            </div>
+          </div>
+
           <button class="header__icon-btn" data-search-toggle aria-label="{{ 'header.search' | t }}">
             {% render 'icon-search' %}
           </button>
@@ -92,7 +122,29 @@
       </div>
     {%- endfor -%}
 
-    <a href="/pages/contact" class="mobile-menu__link">Contact</a>
+    <div class="mobile-menu__group" data-mobile-accordion>
+      <button class="mobile-menu__link mobile-menu__link--parent" aria-expanded="false" data-mobile-accordion-trigger>
+        <span>Support</span>
+        <span class="mobile-menu__chevron">{% render 'icon-chevron' %}</span>
+      </button>
+      <div class="mobile-menu__submenu" data-mobile-accordion-content aria-hidden="true">
+        <a href="/pages/contact" class="mobile-menu__sublink">Contact Us</a>
+        <a href="/pages/faq" class="mobile-menu__sublink">FAQ</a>
+        <span class="mobile-menu__sublabel">Policies</span>
+        {%- if policies.shipping_policy != blank -%}
+          <a href="{{ policies.shipping_policy.url }}" class="mobile-menu__grandchild-link">Shipping Policy</a>
+        {%- endif -%}
+        {%- if policies.refund_policy != blank -%}
+          <a href="{{ policies.refund_policy.url }}" class="mobile-menu__grandchild-link">Returns &amp; Refunds</a>
+        {%- endif -%}
+        {%- if policies.terms_of_service != blank -%}
+          <a href="{{ policies.terms_of_service.url }}" class="mobile-menu__grandchild-link">Terms of Service</a>
+        {%- endif -%}
+        {%- if policies.privacy_policy != blank -%}
+          <a href="{{ policies.privacy_policy.url }}" class="mobile-menu__grandchild-link">Privacy Policy</a>
+        {%- endif -%}
+      </div>
+    </div>
   </nav>
 </div>
 

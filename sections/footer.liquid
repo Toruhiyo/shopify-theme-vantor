@@ -1,6 +1,37 @@
 <footer class="footer section-spacing">
   <div class="page-width">
     <div class="footer__grid">
+      {%- comment -%} Shop column — auto from collections {%- endcomment -%}
+      <div class="footer__column">
+        <h4 class="footer__heading">Shop</h4>
+        {%- for col in collections -%}
+          {%- if col.handle == 'all' or col.products_count == 0 -%}
+            {%- continue -%}
+          {%- endif -%}
+          <a href="{{ col.url }}" class="footer__link">{{ col.title }}</a>
+        {%- endfor -%}
+      </div>
+
+      {%- comment -%} Support column {%- endcomment -%}
+      <div class="footer__column">
+        <h4 class="footer__heading">Support</h4>
+        <a href="/pages/contact" class="footer__link">Contact Us</a>
+        <a href="/pages/faq" class="footer__link">FAQ</a>
+        <a href="{{ routes.account_url }}" class="footer__link">My Account</a>
+        <a href="/pages/track-order" class="footer__link">Track Order</a>
+      </div>
+
+      {%- comment -%} Legal column — auto from store policies {%- endcomment -%}
+      <div class="footer__column">
+        <h4 class="footer__heading">Legal</h4>
+        {%- for policy in shop.policies -%}
+          {%- if policy != blank -%}
+            <a href="{{ policy.url }}" class="footer__link">{{ policy.title }}</a>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      {%- comment -%} Configurable blocks (newsletter, custom text, etc.) {%- endcomment -%}
       {%- for block in section.blocks -%}
         {%- case block.type -%}
 

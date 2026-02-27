@@ -1,12 +1,10 @@
 <header class="header" data-header>
   <div class="page-width">
     <div class="header__inner">
-      {%- comment -%} Mobile menu toggle {%- endcomment -%}
       <button class="header__icon-btn header__menu-toggle" data-menu-toggle aria-label="{{ 'header.menu' | t }}" style="display:none;">
         {% render 'icon-menu' %}
       </button>
 
-      {%- comment -%} Logo {%- endcomment -%}
       <div class="header__logo">
         <a href="/">
           {%- if section.settings.logo != blank -%}
@@ -23,30 +21,118 @@
         </a>
       </div>
 
-      {%- comment -%} Desktop Navigation {%- endcomment -%}
       <nav class="header__nav" role="navigation" aria-label="{{ 'header.navigation' | t }}">
         {%- for link in section.settings.menu.links -%}
-          <div class="header__nav-item" {% if link.links.size > 0 %}aria-haspopup="true"{% endif %}>
+          {%- assign has_children = false -%}
+          {%- if link.links.size > 0 -%}
+            {%- assign has_children = true -%}
+          {%- endif -%}
+
+          <div class="header__nav-item" {% if has_children %}aria-haspopup="true"{% endif %}>
             <a href="{{ link.url }}" class="header__nav-link {% if link.active %}is-active{% endif %}">
               {{ link.title }}
+              {%- if has_children -%}
+                <span class="header__nav-chevron">{% render 'icon-chevron' %}</span>
+              {%- endif -%}
             </a>
 
-            {%- if link.links.size > 0 -%}
-              <div class="mega-menu">
+            {%- if has_children -%}
+              <div class="mega-menu" data-mega-menu>
                 <div class="page-width">
-                  <div class="mega-menu__grid">
-                    {%- for child_link in link.links -%}
-                      <div class="mega-menu__column">
-                        <p class="mega-menu__column-title">{{ child_link.title }}</p>
-                        {%- if child_link.links.size > 0 -%}
-                          {%- for grandchild_link in child_link.links -%}
-                            <a href="{{ grandchild_link.url }}" class="mega-menu__link">{{ grandchild_link.title }}</a>
-                          {%- endfor -%}
-                        {%- else -%}
-                          <a href="{{ child_link.url }}" class="mega-menu__link">{{ 'header.view_all' | t }}</a>
+                  <div class="mega-menu__layout">
+                    <div class="mega-menu__columns">
+                      {%- for child_link in link.links -%}
+                        {%- assign is_collection = false -%}
+                        {%- assign child_collection = nil -%}
+                        {%- if child_link.type == 'collection_link' -%}
+                          {%- assign is_collection = true -%}
+                          {%- assign child_collection = child_link.object -%}
                         {%- endif -%}
-                      </div>
-                    {%- endfor -%}
+
+                        <div class="mega-menu__column">
+                          <a href="{{ child_link.url }}" class="mega-menu__column-header">
+                            {%- if is_collection and child_collection.image -%}
+                              <div class="mega-menu__column-image">
+                                <img
+                                  src="{{ child_collection.image | image_url: width: 400 }}"
+                                  alt="{{ child_collection.title }}"
+                                  width="400"
+                                  height="250"
+                                  loading="lazy"
+                                >
+                              </div>
+                            {%- endif -%}
+                            <span class="mega-menu__column-title">{{ child_link.title }}</span>
+                            {%- if is_collection and child_collection.products_count > 0 -%}
+                              <span class="mega-menu__column-count">{{ child_collection.products_count }} {{ child_collection.products_count | pluralize: 'product', 'products' }}</span>
+                            {%- endif -%}
+                          </a>
+
+                          {%- if child_link.links.size > 0 -%}
+                            <ul class="mega-menu__links">
+                              {%- for grandchild_link in child_link.links -%}
+                                <li>
+                                  <a href="{{ grandchild_link.url }}" class="mega-menu__link">
+                                    {{ grandchild_link.title }}
+                                    {%- if grandchild_link.type == 'collection_link' and grandchild_link.object.products_count > 0 -%}
+                                      <span class="mega-menu__link-count">{{ grandchild_link.object.products_count }}</span>
+                                    {%- endif -%}
+                                  </a>
+                                </li>
+                              {%- endfor -%}
+                              <li>
+                                <a href="{{ child_link.url }}" class="mega-menu__link mega-menu__link--all">View all {{ child_link.title }}</a>
+                              </li>
+                            </ul>
+                          {%- else -%}
+                            <ul class="mega-menu__links">
+                              {%- if is_collection -%}
+                                {%- for product in child_collection.products limit: 5 -%}
+                                  <li>
+                                    <a href="{{ product.url }}" class="mega-menu__link">{{ product.title }}</a>
+                                  </li>
+                                {%- endfor -%}
+                                {%- if child_collection.products.size > 5 -%}
+                                  <li>
+                                    <a href="{{ child_link.url }}" class="mega-menu__link mega-menu__link--all">View all ({{ child_collection.products_count }})</a>
+                                  </li>
+                                {%- endif -%}
+                              {%- else -%}
+                                <li>
+                                  <a href="{{ child_link.url }}" class="mega-menu__link mega-menu__link--all">{{ child_link.title }}</a>
+                                </li>
+                              {%- endif -%}
+                            </ul>
+                          {%- endif -%}
+                        </div>
+                      {%- endfor -%}
+                    </div>
+
+                    {%- if section.settings.mega_menu_featured_collection != blank -%}
+                      {%- assign featured = section.settings.mega_menu_featured_collection -%}
+                      {%- if featured.products.size > 0 -%}
+                        <div class="mega-menu__featured">
+                          <p class="mega-menu__featured-label">Trending Now</p>
+                          <div class="mega-menu__featured-products">
+                            {%- for product in featured.products limit: 2 -%}
+                              <a href="{{ product.url }}" class="mega-menu__featured-card">
+                                {%- if product.featured_image -%}
+                                  <img
+                                    src="{{ product.featured_image | image_url: width: 300, height: 300, crop: 'center' }}"
+                                    alt="{{ product.title }}"
+                                    width="300"
+                                    height="300"
+                                    loading="lazy"
+                                  >
+                                {%- endif -%}
+                                <span class="mega-menu__featured-title">{{ product.title }}</span>
+                                <span class="mega-menu__featured-price">{{ product.price | money }}</span>
+                              </a>
+                            {%- endfor -%}
+                          </div>
+                        </div>
+                      {%- endif -%}
+                    {%- endif -%}
                   </div>
                 </div>
               </div>
@@ -55,9 +141,6 @@
         {%- endfor -%}
       </nav>
 
-      {%- comment -%} Quick Links (optional) {%- endcomment -%}
-
-      {%- comment -%} Icons {%- endcomment -%}
       <div class="header__icons">
         <button class="header__icon-btn" data-search-toggle aria-label="{{ 'header.search' | t }}">
           {% render 'icon-search' %}
@@ -86,13 +169,48 @@
       {% render 'icon-close' %}
     </button>
   </div>
+
   <nav class="mobile-menu__nav">
     {%- for link in section.settings.menu.links -%}
-      <a href="{{ link.url }}" class="mobile-menu__link">{{ link.title }}</a>
       {%- if link.links.size > 0 -%}
-        {%- for child_link in link.links -%}
-          <a href="{{ child_link.url }}" class="mobile-menu__link" style="padding-left: 1rem; font-size: 0.9375rem; color: var(--color-muted-fg);">{{ child_link.title }}</a>
-        {%- endfor -%}
+        <div class="mobile-menu__group" data-mobile-accordion>
+          <button class="mobile-menu__link mobile-menu__link--parent" aria-expanded="false" data-mobile-accordion-trigger>
+            <span>{{ link.title }}</span>
+            <span class="mobile-menu__chevron">{% render 'icon-chevron' %}</span>
+          </button>
+
+          <div class="mobile-menu__submenu" data-mobile-accordion-content aria-hidden="true">
+            {%- for child_link in link.links -%}
+              {%- if child_link.links.size > 0 -%}
+                <div class="mobile-menu__subgroup" data-mobile-accordion>
+                  <button class="mobile-menu__sublink mobile-menu__sublink--parent" aria-expanded="false" data-mobile-accordion-trigger>
+                    <span>{{ child_link.title }}</span>
+                    {%- if child_link.type == 'collection_link' and child_link.object.products_count > 0 -%}
+                      <span class="mobile-menu__count">{{ child_link.object.products_count }}</span>
+                    {%- endif -%}
+                    <span class="mobile-menu__chevron">{% render 'icon-chevron' %}</span>
+                  </button>
+
+                  <div class="mobile-menu__submenu mobile-menu__submenu--nested" data-mobile-accordion-content aria-hidden="true">
+                    <a href="{{ child_link.url }}" class="mobile-menu__grandchild-link">View all {{ child_link.title }}</a>
+                    {%- for grandchild_link in child_link.links -%}
+                      <a href="{{ grandchild_link.url }}" class="mobile-menu__grandchild-link">{{ grandchild_link.title }}</a>
+                    {%- endfor -%}
+                  </div>
+                </div>
+              {%- else -%}
+                <a href="{{ child_link.url }}" class="mobile-menu__sublink">
+                  {{ child_link.title }}
+                  {%- if child_link.type == 'collection_link' and child_link.object.products_count > 0 -%}
+                    <span class="mobile-menu__count">{{ child_link.object.products_count }}</span>
+                  {%- endif -%}
+                </a>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- else -%}
+        <a href="{{ link.url }}" class="mobile-menu__link">{{ link.title }}</a>
       {%- endif -%}
     {%- endfor -%}
   </nav>
@@ -135,7 +253,14 @@
       "type": "link_list",
       "id": "menu",
       "label": "Navigation menu",
-      "default": "main-menu"
+      "default": "main-menu",
+      "info": "Build your catalog hierarchy in Online Store > Navigation. Use collections as links for dynamic images and product counts."
+    },
+    {
+      "type": "collection",
+      "id": "mega_menu_featured_collection",
+      "label": "Mega menu — Featured collection",
+      "info": "Show 2 trending products in the mega menu dropdown."
     }
   ]
 }

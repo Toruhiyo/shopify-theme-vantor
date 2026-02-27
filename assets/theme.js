@@ -63,6 +63,7 @@
       if (!this.menu) return;
 
       this.bindEvents();
+      this.initAccordions();
     }
 
     bindEvents() {
@@ -75,6 +76,35 @@
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && this.isOpen()) this.close();
       });
+    }
+
+    initAccordions() {
+      this.menu.querySelectorAll('[data-mobile-accordion-trigger]').forEach(trigger => {
+        trigger.addEventListener('click', () => {
+          const parent = trigger.closest('[data-mobile-accordion]');
+          const content = parent?.querySelector('[data-mobile-accordion-content]');
+          if (!content) return;
+
+          const isOpen = trigger.getAttribute('aria-expanded') === 'true';
+          trigger.setAttribute('aria-expanded', String(!isOpen));
+          content.setAttribute('aria-hidden', String(isOpen));
+
+          if (isOpen) {
+            content.style.maxHeight = '0';
+          } else {
+            content.style.maxHeight = content.scrollHeight + 'px';
+            this.updateParentHeights(content);
+          }
+        });
+      });
+    }
+
+    updateParentHeights(el) {
+      let parent = el.parentElement?.closest('[data-mobile-accordion-content]');
+      while (parent) {
+        parent.style.maxHeight = parent.scrollHeight + el.scrollHeight + 'px';
+        parent = parent.parentElement?.closest('[data-mobile-accordion-content]');
+      }
     }
 
     isOpen() {

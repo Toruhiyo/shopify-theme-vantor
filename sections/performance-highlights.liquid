@@ -1,0 +1,73 @@
+<section class="vantor-section">
+  <div class="page-width">
+    <h2>{{ section.settings.heading }}</h2>
+    <div class="vantor-grid highlights-grid vantor-fade" style="margin-top: 1rem;">
+      {% for block in section.blocks %}
+        <article class="vantor-card highlight-item" {{ block.shopify_attributes }}>
+          <div>{{ block.settings.icon }}</div>
+          <strong>{{ block.settings.title }}</strong>
+          <p>{{ block.settings.text }}</p>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Performance highlights",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "HEAR EVERY DETAIL"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Highlight item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Icon",
+          "default": "⚡"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "ULTRA LOW LATENCY"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "RESPOND INSTANTLY UNDER LOAD."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Performance highlights",
+      "blocks": [
+        {
+          "type": "item"
+        },
+        {
+          "type": "item"
+        },
+        {
+          "type": "item"
+        },
+        {
+          "type": "item"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

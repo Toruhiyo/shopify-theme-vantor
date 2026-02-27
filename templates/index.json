@@ -1,0 +1,99 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero-vantor",
+      "settings": {
+        "heading": "BUILT TO WIN",
+        "subheading": "ENGINEERED AUDIO AND INPUT HARDWARE FOR COMPETITION-GRADE PLAY.",
+        "primary_cta_label": "SHOP NOW",
+        "secondary_cta_label": "VIEW SYSTEMS"
+      }
+    },
+    "featured": {
+      "type": "featured-products-vantor",
+      "settings": {
+        "heading": "NO COMPROMISE LOADOUT",
+        "products_to_show": 8,
+        "quick_add": true
+      }
+    },
+    "highlights": {
+      "type": "performance-highlights",
+      "blocks": {
+        "item_1": {
+          "type": "item",
+          "settings": {
+            "icon": "⚡",
+            "title": "LOW LATENCY",
+            "text": "RESPOND FASTER IN CRITICAL WINDOWS."
+          }
+        },
+        "item_2": {
+          "type": "item",
+          "settings": {
+            "icon": "🎯",
+            "title": "PINPOINT AUDIO",
+            "text": "TRACK ENEMIES THROUGH CHAOTIC MIXES."
+          }
+        },
+        "item_3": {
+          "type": "item",
+          "settings": {
+            "icon": "🛡",
+            "title": "TOURNAMENT BUILD",
+            "text": "ALLOY FRAMES MADE FOR DAILY PRESSURE."
+          }
+        },
+        "item_4": {
+          "type": "item",
+          "settings": {
+            "icon": "❄",
+            "title": "THERMAL CONTROL",
+            "text": "STAY STABLE DURING MARATHON SESSIONS."
+          }
+        }
+      },
+      "block_order": ["item_1", "item_2", "item_3", "item_4"],
+      "settings": {
+        "heading": "ENGINEERED FOR COMPETITION"
+      }
+    },
+    "categories": {
+      "type": "category-blocks",
+      "settings": {
+        "heading": "SHOP BY CATEGORY"
+      }
+    },
+    "reviews": {
+      "type": "reviews-dark",
+      "blocks": {
+        "review_1": {
+          "type": "review",
+          "settings": {
+            "quote": "HEAR EVERY FOOTSTEP. CALL EVERY PLAY.",
+            "source": "PRO TEAM CAPTAIN"
+          }
+        },
+        "review_2": {
+          "type": "review",
+          "settings": {
+            "quote": "THE CONTROL RESPONSE FEELS MECHANICAL AND PRECISE.",
+            "source": "FPS ANALYST"
+          }
+        },
+        "review_3": {
+          "type": "review",
+          "settings": {
+            "quote": "ZERO DISTRACTIONS. PURE SIGNAL.",
+            "source": "STUDIO REVIEW LAB"
+          }
+        }
+      },
+      "block_order": ["review_1", "review_2", "review_3"],
+      "settings": {
+        "heading": "PROVEN UNDER PRESSURE"
+      }
+    }
+  },
+  "order": ["hero", "featured", "highlights", "categories", "reviews"]
+}

@@ -1,0 +1,63 @@
+<section class="vantor-section">
+  <div class="page-width">
+    <h2>{{ section.settings.heading }}</h2>
+    <div class="vantor-grid review-grid vantor-fade" style="margin-top: 1rem;">
+      {% for block in section.blocks %}
+        <article class="vantor-card review-card" {{ block.shopify_attributes }}>
+          <p class="review-card__quote">“{{ block.settings.quote }}”</p>
+          <p style="margin-top: 0.75rem;">{{ block.settings.source }}</p>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Reviews dark",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "PROVEN IN COMPETITION"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        {
+          "type": "text",
+          "id": "quote",
+          "label": "Quote",
+          "default": "THE MOST PRECISE AUDIO CUEING WE HAVE TESTED THIS YEAR."
+        },
+        {
+          "type": "text",
+          "id": "source",
+          "label": "Source",
+          "default": "HARDWARE LABS"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Reviews dark",
+      "blocks": [
+        {
+          "type": "review"
+        },
+        {
+          "type": "review"
+        },
+        {
+          "type": "review"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

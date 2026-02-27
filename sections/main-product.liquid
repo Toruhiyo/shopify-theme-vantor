@@ -1,0 +1,208 @@
+<section class="vantor-section">
+  <div class="page-width">
+    <div class="main-product">
+      <div class="product-gallery vantor-fade">
+        {% assign featured_media = product.selected_or_first_available_variant.featured_media | default: product.featured_media %}
+        {% assign main_image_id = 'MainProductImage-' | append: section.id %}
+        {% if featured_media %}
+          <div class="product-gallery__main">
+            {{
+              featured_media
+              | image_url: width: 1200
+              | image_tag: id: main_image_id, widths: '720, 960, 1200', sizes: '(min-width: 990px) 60vw, 100vw', loading: 'eager'
+            }}
+          </div>
+        {% endif %}
+
+        <div class="product-thumbs">
+          {% for media in product.media limit: 8 %}
+            <button
+              type="button"
+              data-product-thumb
+              data-target="#MainProductImage-{{ section.id }}"
+              data-image="{{ media | image_url: width: 1200 }}"
+              data-srcset="{{ media | image_url: width: 720 }} 720w, {{ media | image_url: width: 960 }} 960w, {{ media | image_url: width: 1200 }} 1200w"
+            >
+              {{
+                media
+                | image_url: width: 200
+                | image_tag: widths: '120, 160, 200', sizes: '25vw', loading: 'lazy'
+              }}
+            </button>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="vantor-card buy-box vantor-fade">
+        <h1>{{ product.title }}</h1>
+        <p class="product-price">{{ product.price | money }}</p>
+        {% if product.description != blank %}
+          <p>{{ product.description | strip_html | truncatewords: 28 }}</p>
+        {% endif %}
+
+        {% form 'product', product %}
+          {% if product.variants.size > 1 %}
+            <label for="Variant-{{ section.id }}">Variant</label>
+            <select id="Variant-{{ section.id }}" name="id">
+              {% for variant in product.variants %}
+                <option value="{{ variant.id }}" {% if variant == product.selected_or_first_available_variant %}selected{% endif %}>
+                  {{ variant.title }} - {{ variant.price | money }}
+                </option>
+              {% endfor %}
+            </select>
+          {% else %}
+            <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+          {% endif %}
+          <button class="vantor-btn vantor-btn--primary" type="submit" style="margin-top: 0.8rem; width: 100%;">
+            {{ section.settings.cta_label }}
+          </button>
+        {% endform %}
+
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {% when '@app' %}
+              {% render block %}
+          {% endcase %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="vantor-grid spec-grid vantor-fade">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'spec' %}
+            <article class="vantor-card spec-item" {{ block.shopify_attributes }}>
+              <strong>{{ block.settings.label }}</strong>
+              <span>{{ block.settings.value }}</span>
+            </article>
+        {% endcase %}
+      {% endfor %}
+    </div>
+
+    <details class="spec-disclosure vantor-fade">
+      <summary>{{ section.settings.specs_label }}</summary>
+      <div class="spec-disclosure__content">
+        {{ product.description }}
+      </div>
+    </details>
+
+    <table class="comparison-table vantor-fade">
+      <thead>
+        <tr>
+          <th>{{ section.settings.compare_col_1 }}</th>
+          <th class="is-highlight">{{ section.settings.compare_col_2 }}</th>
+          <th>{{ section.settings.compare_col_3 }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{ section.settings.compare_row_a_1 }}</td>
+          <td class="is-highlight">{{ section.settings.compare_row_a_2 }}</td>
+          <td>{{ section.settings.compare_row_a_3 }}</td>
+        </tr>
+        <tr>
+          <td>{{ section.settings.compare_row_b_1 }}</td>
+          <td class="is-highlight">{{ section.settings.compare_row_b_2 }}</td>
+          <td>{{ section.settings.compare_row_b_3 }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Main product",
+  "blocks": [
+    {
+      "type": "@app"
+    },
+    {
+      "type": "spec",
+      "name": "Spec item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "FREQUENCY"
+        },
+        {
+          "type": "text",
+          "id": "value",
+          "label": "Value",
+          "default": "20Hz - 40kHz"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA label",
+      "default": "ADD TO CART"
+    },
+    {
+      "type": "text",
+      "id": "specs_label",
+      "label": "Specs disclosure label",
+      "default": "VIEW DETAILED SPECS"
+    },
+    {
+      "type": "text",
+      "id": "compare_col_1",
+      "label": "Comparison column 1",
+      "default": "STANDARD"
+    },
+    {
+      "type": "text",
+      "id": "compare_col_2",
+      "label": "Comparison column 2",
+      "default": "VANTOR PRO"
+    },
+    {
+      "type": "text",
+      "id": "compare_col_3",
+      "label": "Comparison column 3",
+      "default": "COMPETITOR X"
+    },
+    {
+      "type": "text",
+      "id": "compare_row_a_1",
+      "label": "Row A column 1",
+      "default": "LATENCY 12MS"
+    },
+    {
+      "type": "text",
+      "id": "compare_row_a_2",
+      "label": "Row A column 2",
+      "default": "LATENCY 4MS"
+    },
+    {
+      "type": "text",
+      "id": "compare_row_a_3",
+      "label": "Row A column 3",
+      "default": "LATENCY 10MS"
+    },
+    {
+      "type": "text",
+      "id": "compare_row_b_1",
+      "label": "Row B column 1",
+      "default": "DRIVER 40MM"
+    },
+    {
+      "type": "text",
+      "id": "compare_row_b_2",
+      "label": "Row B column 2",
+      "default": "DRIVER 50MM"
+    },
+    {
+      "type": "text",
+      "id": "compare_row_b_3",
+      "label": "Row B column 3",
+      "default": "DRIVER 45MM"
+    }
+  ]
+}
+{% endschema %}

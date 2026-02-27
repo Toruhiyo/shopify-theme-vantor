@@ -56,61 +56,40 @@
     }
   }
 
-  /* --- Desktop Navigation (sub-nav switching + mega menus) --- */
+  /* --- Desktop Navigation (mega menus on primary nav items) --- */
   class DesktopNav {
     constructor() {
       this.header = document.querySelector('[data-header]');
       if (!this.header) return;
 
-      this.navParents = this.header.querySelectorAll('[data-nav-parent]');
-      this.subnavPanels = this.header.querySelectorAll('[data-subnav-panel]');
-      this.subnavItems = this.header.querySelectorAll('[data-subnav-has-mega]');
-      this.activeSubnav = null;
+      this.megaItems = this.header.querySelectorAll('[data-nav-mega]');
       this.activeMega = null;
       this.hoverTimeout = null;
       this.leaveTimeout = null;
 
-      this.bindNavParents();
-      this.bindSubnavItems();
+      this.bindMegaItems();
       this.bindHeaderLeave();
     }
 
-    bindNavParents() {
-      this.navParents.forEach(item => {
-        const idx = item.dataset.navParent;
-
+    bindMegaItems() {
+      this.megaItems.forEach(item => {
         item.addEventListener('mouseenter', () => {
           clearTimeout(this.leaveTimeout);
-          this.showSubnav(idx);
-        });
-      });
-    }
-
-    bindSubnavItems() {
-      this.subnavItems.forEach(item => {
-        item.addEventListener('mouseenter', () => {
           clearTimeout(this.hoverTimeout);
           this.hoverTimeout = setTimeout(() => this.showMega(item), 80);
         });
 
         item.addEventListener('mouseleave', () => {
           clearTimeout(this.hoverTimeout);
-        });
-      });
-
-      this.subnavPanels.forEach(panel => {
-        panel.addEventListener('mouseleave', () => {
-          this.hideMega();
+          this.leaveTimeout = setTimeout(() => this.hideMega(), 150);
         });
       });
     }
 
     bindHeaderLeave() {
       this.header.addEventListener('mouseleave', () => {
-        this.leaveTimeout = setTimeout(() => {
-          this.hideMega();
-          this.resetToDefault();
-        }, 200);
+        clearTimeout(this.hoverTimeout);
+        this.leaveTimeout = setTimeout(() => this.hideMega(), 200);
       });
 
       this.header.addEventListener('mouseenter', () => {
@@ -118,27 +97,8 @@
       });
     }
 
-    showSubnav(idx) {
-      this.hideMega();
-      this.subnavPanels.forEach(panel => {
-        panel.classList.toggle('is-visible', panel.dataset.subnavPanel === idx);
-      });
-      this.navParents.forEach(item => {
-        item.classList.toggle('is-subnav-active', item.dataset.navParent === idx);
-      });
-      this.activeSubnav = idx;
-    }
-
-    resetToDefault() {
-      this.navParents.forEach(item => item.classList.remove('is-subnav-active'));
-      this.subnavPanels.forEach(panel => {
-        panel.classList.toggle('is-visible', panel.classList.contains('is-default'));
-      });
-      this.activeSubnav = null;
-    }
-
     showMega(item) {
-      if (this.activeMega) {
+      if (this.activeMega && this.activeMega !== item) {
         this.activeMega.classList.remove('is-mega-active');
       }
       item.classList.add('is-mega-active');

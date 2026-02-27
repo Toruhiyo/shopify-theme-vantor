@@ -1,7 +1,6 @@
 {%- assign menu = section.settings.menu -%}
 
 <header class="header" data-header>
-  {%- comment -%} Row 1: Primary navigation {%- endcomment -%}
   <div class="header__primary">
     <div class="page-width">
       <div class="header__inner">
@@ -22,35 +21,22 @@
         </div>
 
         <nav class="header__nav" role="navigation" aria-label="{{ 'header.navigation' | t }}">
-          {%- for link in menu.links -%}
-            {%- assign has_children = false -%}
-            {%- assign is_catalog_link = false -%}
-
-            {%- if link.links.size > 0 -%}
-              {%- assign has_children = true -%}
+          {%- for col in collections -%}
+            {%- if col.handle == 'all' or col.products_count == 0 -%}
+              {%- continue -%}
             {%- endif -%}
 
-            {%- comment -%} Detect catalog / collections links to auto-generate sub-nav {%- endcomment -%}
-            {%- assign link_url_down = link.url | downcase -%}
-            {%- if link_url_down == '/collections' or link_url_down == '/collections/' or link_url_down == '/collections/all' -%}
-              {%- assign is_catalog_link = true -%}
-            {%- endif -%}
-
-            <div
-              class="header__nav-item"
-              {% if has_children or is_catalog_link %}
-                data-nav-parent="{{ forloop.index0 }}"
-              {% endif %}
-            >
-              <a
-                href="{{ link.url }}"
-                class="header__nav-link {% if link.active or link.child_active %}is-active{% endif %}"
-              >
-                {{ link.title }}
-                {%- if has_children or is_catalog_link -%}
-                  <span class="header__nav-chevron">{% render 'icon-chevron' %}</span>
-                {%- endif -%}
+            <div class="header__nav-item" data-nav-mega>
+              <a href="{{ col.url }}" class="header__nav-link">
+                {{ col.title }}
+                <span class="header__nav-chevron">{% render 'icon-chevron' %}</span>
               </a>
+
+              <div class="mega-menu" data-mega-panel>
+                <div class="page-width">
+                  {% render 'mega-menu-config', col: col %}
+                </div>
+              </div>
             </div>
           {%- endfor -%}
         </nav>
@@ -68,146 +54,13 @@
               <span class="header__cart-count">{{ cart.item_count }}</span>
             {%- endif -%}
           </button>
+          <button class="header__icon-btn header__menu-toggle" data-menu-toggle aria-label="{{ 'header.menu' | t }}">
+            {% render 'icon-menu' %}
+          </button>
         </div>
       </div>
     </div>
   </div>
-
-  {%- comment -%}
-    Row 2: Category sub-nav panels.
-    Two sources:
-      A) "Catalog" / "Collections" links → auto-generate from store collections (priority)
-      B) Other top-level links that have children in the menu (manual hierarchy)
-  {%- endcomment -%}
-
-  {%- assign default_subnav_set = false -%}
-  {%- for link in menu.links -%}
-    {%- assign link_url_down = link.url | downcase -%}
-    {%- assign is_catalog_link = false -%}
-    {%- if link_url_down == '/collections' or link_url_down == '/collections/' or link_url_down == '/collections/all' -%}
-      {%- assign is_catalog_link = true -%}
-    {%- endif -%}
-
-    {%- comment -%} === SOURCE A: Auto-generated catalog from store collections (takes priority) === {%- endcomment -%}
-    {%- if is_catalog_link -%}
-      <div
-        class="header__subnav {% unless default_subnav_set %}is-default is-visible{% endunless %}"
-        data-subnav-panel="{{ forloop.index0 }}"
-      >
-        <div class="page-width">
-          <div class="header__subnav-scroll">
-            {%- for col in collections -%}
-              {%- if col.handle == 'all' or col.products_count == 0 -%}
-                {%- continue -%}
-              {%- endif -%}
-
-              <div class="header__subnav-item" data-subnav-has-mega>
-                <a href="{{ col.url }}" class="header__subnav-link">
-                  {{ col.title }}
-                  <span class="header__subnav-chevron">{% render 'icon-chevron' %}</span>
-                </a>
-
-                <div class="mega-menu" data-mega-panel>
-                  <div class="page-width">
-                    {% render 'mega-menu-config', col: col %}
-                  </div>
-                </div>
-              </div>
-            {%- endfor -%}
-          </div>
-        </div>
-      </div>
-      {%- assign default_subnav_set = true -%}
-
-    {%- comment -%} === SOURCE B: Manual menu hierarchy (for non-catalog links with children) === {%- endcomment -%}
-    {%- elsif link.links.size > 0 -%}
-      <div
-        class="header__subnav {% unless default_subnav_set %}is-default is-visible{% endunless %}"
-        data-subnav-panel="{{ forloop.index0 }}"
-      >
-        <div class="page-width">
-          <div class="header__subnav-scroll">
-            {%- for child_link in link.links -%}
-              {%- assign child_has_mega = false -%}
-              {%- if child_link.links.size > 0 or child_link.type == 'collection_link' -%}
-                {%- assign child_has_mega = true -%}
-              {%- endif -%}
-
-              <div class="header__subnav-item" {% if child_has_mega %}data-subnav-has-mega{% endif %}>
-                <a href="{{ child_link.url }}" class="header__subnav-link">
-                  {{ child_link.title }}
-                  {%- if child_has_mega -%}
-                    <span class="header__subnav-chevron">{% render 'icon-chevron' %}</span>
-                  {%- endif -%}
-                </a>
-
-                {%- if child_link.links.size > 0 -%}
-                  <div class="mega-menu" data-mega-panel>
-                    <div class="page-width">
-                      <div class="mega-menu__grid">
-                        {%- for grandchild in child_link.links -%}
-                          <div class="mega-menu__column">
-                            <a href="{{ grandchild.url }}" class="mega-menu__column-title">{{ grandchild.title }}</a>
-                            {%- if grandchild.links.size > 0 -%}
-                              <ul class="mega-menu__links">
-                                {%- for ggchild in grandchild.links -%}
-                                  <li><a href="{{ ggchild.url }}" class="mega-menu__link">{{ ggchild.title }}</a></li>
-                                {%- endfor -%}
-                              </ul>
-                            {%- elsif grandchild.type == 'collection_link' -%}
-                              <ul class="mega-menu__links">
-                                {%- for product in grandchild.object.products limit: 6 -%}
-                                  <li><a href="{{ product.url }}" class="mega-menu__link">{{ product.title }}</a></li>
-                                {%- endfor -%}
-                              </ul>
-                            {%- endif -%}
-                          </div>
-                        {%- endfor -%}
-                      </div>
-                      <div class="mega-menu__footer">
-                        <a href="{{ child_link.url }}" class="mega-menu__view-all">
-                          Shop All {{ child_link.title }}
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                {%- elsif child_link.type == 'collection_link' -%}
-                  {%- assign col = child_link.object -%}
-                  {%- if col.products.size > 0 -%}
-                    <div class="mega-menu" data-mega-panel>
-                      <div class="page-width">
-                        <div class="mega-menu__product-grid">
-                          {%- for product in col.products limit: 8 -%}
-                            <a href="{{ product.url }}" class="mega-menu__product-card">
-                              {%- if product.featured_image -%}
-                                <div class="mega-menu__product-image">
-                                  <img src="{{ product.featured_image | image_url: width: 200, height: 200, crop: 'center' }}" alt="{{ product.title }}" width="200" height="200" loading="lazy">
-                                </div>
-                              {%- endif -%}
-                              <span class="mega-menu__product-title">{{ product.title }}</span>
-                              <span class="mega-menu__product-price">{{ product.price | money }}</span>
-                            </a>
-                          {%- endfor -%}
-                        </div>
-                        <div class="mega-menu__footer">
-                          <a href="{{ child_link.url }}" class="mega-menu__view-all">
-                            Shop All {{ child_link.title }} ({{ col.products_count }})
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  {%- endif -%}
-                {%- endif -%}
-              </div>
-            {%- endfor -%}
-          </div>
-        </div>
-      </div>
-      {%- assign default_subnav_set = true -%}
-    {%- endif -%}
-  {%- endfor -%}
 </header>
 
 {%- comment -%} Mobile Menu {%- endcomment -%}
@@ -220,74 +73,26 @@
   </div>
 
   <nav class="mobile-menu__nav">
-    {%- for link in menu.links -%}
-      {%- assign link_url_down = link.url | downcase -%}
-      {%- assign is_catalog_link = false -%}
-      {%- if link_url_down == '/collections' or link_url_down == '/collections/' or link_url_down == '/collections/all' -%}
-        {%- assign is_catalog_link = true -%}
+    <a href="/" class="mobile-menu__link">Home</a>
+
+    {%- for col in collections -%}
+      {%- if col.handle == 'all' or col.products_count == 0 -%}
+        {%- continue -%}
       {%- endif -%}
 
-      {%- if is_catalog_link -%}
-        {%- comment -%} Auto-generated from store collections with sub-category links {%- endcomment -%}
-        <div class="mobile-menu__group" data-mobile-accordion>
-          <button class="mobile-menu__link mobile-menu__link--parent" aria-expanded="false" data-mobile-accordion-trigger>
-            <span>{{ link.title }}</span>
-            <span class="mobile-menu__chevron">{% render 'icon-chevron' %}</span>
-          </button>
-          <div class="mobile-menu__submenu" data-mobile-accordion-content aria-hidden="true">
-            {%- for col in collections -%}
-              {%- if col.handle == 'all' or col.products_count == 0 -%}
-                {%- continue -%}
-              {%- endif -%}
-              <div class="mobile-menu__subgroup" data-mobile-accordion>
-                <button class="mobile-menu__sublink mobile-menu__sublink--parent" aria-expanded="false" data-mobile-accordion-trigger>
-                  <span>{{ col.title }}</span>
-                  <span class="mobile-menu__count">{{ col.products_count }}</span>
-                  <span class="mobile-menu__chevron">{% render 'icon-chevron' %}</span>
-                </button>
-                <div class="mobile-menu__submenu mobile-menu__submenu--nested" data-mobile-accordion-content aria-hidden="true">
-                  <a href="{{ col.url }}" class="mobile-menu__grandchild-link mobile-menu__grandchild-link--all">Shop All {{ col.title }}</a>
-                  {% render 'mega-menu-mobile', col: col %}
-                </div>
-              </div>
-            {%- endfor -%}
-            <a href="/collections" class="mobile-menu__sublink" style="color: var(--color-primary); font-weight: 600;">View All Collections</a>
-          </div>
+      <div class="mobile-menu__group" data-mobile-accordion>
+        <button class="mobile-menu__link mobile-menu__link--parent" aria-expanded="false" data-mobile-accordion-trigger>
+          <span>{{ col.title }}</span>
+          <span class="mobile-menu__chevron">{% render 'icon-chevron' %}</span>
+        </button>
+        <div class="mobile-menu__submenu" data-mobile-accordion-content aria-hidden="true">
+          <a href="{{ col.url }}" class="mobile-menu__sublink mobile-menu__sublink--all">Shop All {{ col.title }}</a>
+          {% render 'mega-menu-mobile', col: col %}
         </div>
-
-      {%- elsif link.links.size > 0 -%}
-        {%- comment -%} Manual hierarchy {%- endcomment -%}
-        <div class="mobile-menu__group" data-mobile-accordion>
-          <button class="mobile-menu__link mobile-menu__link--parent" aria-expanded="false" data-mobile-accordion-trigger>
-            <span>{{ link.title }}</span>
-            <span class="mobile-menu__chevron">{% render 'icon-chevron' %}</span>
-          </button>
-          <div class="mobile-menu__submenu" data-mobile-accordion-content aria-hidden="true">
-            {%- for child_link in link.links -%}
-              {%- if child_link.links.size > 0 -%}
-                <div class="mobile-menu__subgroup" data-mobile-accordion>
-                  <button class="mobile-menu__sublink mobile-menu__sublink--parent" aria-expanded="false" data-mobile-accordion-trigger>
-                    <span>{{ child_link.title }}</span>
-                    <span class="mobile-menu__chevron">{% render 'icon-chevron' %}</span>
-                  </button>
-                  <div class="mobile-menu__submenu mobile-menu__submenu--nested" data-mobile-accordion-content aria-hidden="true">
-                    <a href="{{ child_link.url }}" class="mobile-menu__grandchild-link mobile-menu__grandchild-link--all">Shop All {{ child_link.title }}</a>
-                    {%- for grandchild in child_link.links -%}
-                      <a href="{{ grandchild.url }}" class="mobile-menu__grandchild-link">{{ grandchild.title }}</a>
-                    {%- endfor -%}
-                  </div>
-                </div>
-              {%- else -%}
-                <a href="{{ child_link.url }}" class="mobile-menu__sublink">{{ child_link.title }}</a>
-              {%- endif -%}
-            {%- endfor -%}
-          </div>
-        </div>
-
-      {%- else -%}
-        <a href="{{ link.url }}" class="mobile-menu__link">{{ link.title }}</a>
-      {%- endif -%}
+      </div>
     {%- endfor -%}
+
+    <a href="/pages/contact" class="mobile-menu__link">Contact</a>
   </nav>
 </div>
 
@@ -324,7 +129,7 @@
       "id": "menu",
       "label": "Navigation menu",
       "default": "main-menu",
-      "info": "The 'Catalog' link auto-generates sub-nav from your store's collections. For full control, build a nested menu hierarchy in Online Store > Navigation."
+      "info": "Primary navigation is auto-generated from your store's collections. This menu is kept for reference."
     }
   ]
 }

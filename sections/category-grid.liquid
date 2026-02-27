@@ -19,7 +19,9 @@
           assign tile_url = tile_collection.url | default: '#'
           assign tile_count = tile_collection.products_count
 
-          assign asset_image = 'category-' | append: tile_collection.handle | append: '.jpg' | asset_url
+          assign title_handle = tile_title | handleize
+          assign collection_handle = tile_collection.handle | default: title_handle
+          assign asset_image = 'category-' | append: collection_handle | append: '.jpg' | asset_url
         -%}
 
         <a href="{{ tile_url }}" class="category-tile" {{ block.shopify_attributes }}>

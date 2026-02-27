@@ -18,37 +18,37 @@
         "type": "color",
         "id": "color_background",
         "label": "Background",
-        "default": "#0e1011"
+        "default": "#040406"
       },
       {
         "type": "color",
         "id": "color_foreground",
         "label": "Foreground",
-        "default": "#fafafa"
+        "default": "#f5f5f7"
       },
       {
         "type": "color",
         "id": "color_card",
         "label": "Card background",
-        "default": "#151719"
+        "default": "#09090d"
       },
       {
         "type": "color",
         "id": "color_muted",
         "label": "Muted background",
-        "default": "#1e2124"
+        "default": "#0d0d12"
       },
       {
         "type": "color",
         "id": "color_muted_foreground",
         "label": "Muted foreground",
-        "default": "#a8adb8"
+        "default": "#7a7a8e"
       },
       {
         "type": "color",
         "id": "color_border",
         "label": "Border",
-        "default": "#282c31"
+        "default": "#16161f"
       },
       {
         "type": "color",

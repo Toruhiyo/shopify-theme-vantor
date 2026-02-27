@@ -112,6 +112,191 @@ h1, h2, h3, h4, h5, h6 {
   border: 0 !important;
 }
 
+/* --- Flowing Energy System ---
+   Animated gradient borders and ambient orbs that drift
+   through sections. Purely decorative, non-interactive. */
+
+.energy-line {
+  position: relative;
+}
+
+.energy-line::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--gradient-accent-animated);
+  background-size: 300% 100%;
+  animation: gradient-flow 6s ease-in-out infinite;
+  opacity: 0.35;
+}
+
+.energy-line--top::before {
+  bottom: auto;
+  top: 0;
+}
+
+.section-spacing {
+  position: relative;
+  padding-top: var(--section-spacing);
+  padding-bottom: var(--section-spacing);
+}
+
+.section-spacing::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--gradient-accent-animated);
+  background-size: 300% 100%;
+  animation: gradient-flow 8s ease-in-out infinite;
+  opacity: 0.15;
+}
+
+.energy-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  animation: orb-pulse 10s ease-in-out infinite;
+}
+
+.energy-orb--purple {
+  width: 300px;
+  height: 300px;
+  background: rgba(124,58,237,0.08);
+}
+
+.energy-orb--salmon {
+  width: 250px;
+  height: 250px;
+  background: rgba(232,149,106,0.05);
+}
+
+/* Ambient glow behind certain sections */
+.hero-section,
+.featured-collection-section,
+.editorial-section,
+.newsletter-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::after,
+.featured-collection-section::after,
+.editorial-section::after {
+  content: '';
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  animation: orb-breathe 12s ease-in-out infinite;
+}
+
+.hero-section::after {
+  bottom: -100px;
+  left: -100px;
+  background: rgba(124,58,237,0.10);
+  animation-delay: 0s;
+}
+
+.featured-collection-section::after {
+  top: -80px;
+  right: -80px;
+  background: rgba(124,58,237,0.06);
+  animation-delay: -4s;
+}
+
+.editorial-section::after {
+  bottom: -60px;
+  right: -60px;
+  background: rgba(232,149,106,0.05);
+  animation-delay: -8s;
+}
+
+.newsletter-section::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 300px;
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: 0;
+  background: rgba(124,58,237,0.06);
+  animation: orb-breathe 10s ease-in-out infinite;
+}
+
+/* Sections content sits above the ambient orbs */
+.hero-section > *,
+.featured-collection-section > *,
+.editorial-section > *,
+.newsletter-section > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Animated gradient border on product cards on hover */
+.product-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: var(--radius);
+  background: var(--gradient-accent-animated);
+  background-size: 300% 100%;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 300ms ease;
+  animation: gradient-flow 4s ease-in-out infinite;
+}
+
+.product-card:hover::before {
+  opacity: 1;
+}
+
+/* Animated gradient accent on testimonial cards */
+.testimonial-card::before {
+  background: var(--gradient-accent-animated);
+  background-size: 300% 100%;
+  animation: gradient-flow 6s ease-in-out infinite;
+}
+
+/* Feature strip top accent line animates */
+.feature-strip::before {
+  background: var(--gradient-accent-animated);
+  background-size: 300% 100%;
+  animation: gradient-flow 8s ease-in-out infinite;
+  opacity: 0.4;
+}
+
+/* Footer top accent line animates */
+.footer::before {
+  background: var(--gradient-accent-animated);
+  background-size: 300% 100%;
+  animation: gradient-flow 10s ease-in-out infinite;
+  opacity: 0.3;
+}
+
+/* Category tile bottom line animates on hover */
+.category-tile::after {
+  background: var(--gradient-accent-animated);
+  background-size: 300% 100%;
+  animation: gradient-flow 3s ease-in-out infinite;
+}
+
 /* --- Layout --- */
 .page-width {
   max-width: var(--page-width);
@@ -125,11 +310,6 @@ h1, h2, h3, h4, h5, h6 {
     padding-left: 2.5rem;
     padding-right: 2.5rem;
   }
-}
-
-.section-spacing {
-  padding-top: var(--section-spacing);
-  padding-bottom: var(--section-spacing);
 }
 
 /* --- Grid System --- */
@@ -432,7 +612,7 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   gap: 0.5rem;
   padding: 0.75rem;
-  background: linear-gradient(to top, rgba(14,16,17,0.95) 0%, rgba(14,16,17,0.6) 60%, transparent 100%);
+  background: linear-gradient(to top, rgba(4,4,6,0.97) 0%, rgba(4,4,6,0.6) 60%, transparent 100%);
   transform: translateY(100%);
   transition: transform 300ms ease;
   z-index: 2;
@@ -688,9 +868,9 @@ h1, h2, h3, h4, h5, h6 {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(14,16,17,0.85);
-  backdrop-filter: blur(16px) saturate(1.5);
-  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  background: rgba(4,4,6,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-border);
   transition: transform 300ms ease;
 }
@@ -870,9 +1050,9 @@ h1, h2, h3, h4, h5, h6 {
   top: 100%;
   left: 0;
   right: 0;
-  background: rgba(21,23,25,0.95);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(4,4,6,0.97);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
   padding: 2rem 0;
@@ -967,7 +1147,7 @@ h1, h2, h3, h4, h5, h6 {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(to top, rgba(4,4,6,0.95) 0%, rgba(4,4,6,0.5) 40%, rgba(4,4,6,0.15) 70%, rgba(4,4,6,0.25) 100%);
+    linear-gradient(to top, rgba(4,4,6,0.97) 0%, rgba(4,4,6,0.55) 35%, rgba(4,4,6,0.10) 65%, rgba(4,4,6,0.30) 100%);
 }
 
 .hero__overlay::after {
@@ -975,8 +1155,8 @@ h1, h2, h3, h4, h5, h6 {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse at 10% 95%, rgba(124,58,237,0.18) 0%, transparent 40%),
-    radial-gradient(ellipse at 90% 90%, rgba(232,149,106,0.10) 0%, transparent 35%);
+    radial-gradient(ellipse at 5% 98%, rgba(124,58,237,0.22) 0%, transparent 35%),
+    radial-gradient(ellipse at 95% 85%, rgba(232,149,106,0.12) 0%, transparent 30%);
   animation: energy-drift 8s ease-in-out infinite alternate;
   pointer-events: none;
 }
@@ -1125,7 +1305,7 @@ h1, h2, h3, h4, h5, h6 {
 .category-tile__overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(4,4,6,0.90) 0%, rgba(4,4,6,0.1) 60%);
+  background: linear-gradient(to top, rgba(4,4,6,0.95) 0%, rgba(4,4,6,0.15) 55%);
   transition: all 300ms ease;
 }
 
@@ -1888,7 +2068,7 @@ h1, h2, h3, h4, h5, h6 {
     right: 0;
     z-index: 90;
     padding: 0.875rem 1.5rem;
-    background: rgba(14,16,17,0.95);
+    background: rgba(4,4,6,0.96);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-top: 1px solid var(--color-border);
@@ -2207,6 +2387,18 @@ h1, h2, h3, h4, h5, h6 {
   0% { opacity: 0.7; transform: scale(1); }
   50% { opacity: 1; transform: scale(1.05); }
   100% { opacity: 0.7; transform: scale(1); }
+}
+
+@keyframes orb-breathe {
+  0%, 100% { opacity: 0; transform: scale(0.8); }
+  30% { opacity: 1; }
+  50% { opacity: 1; transform: scale(1.1); }
+  70% { opacity: 1; }
+}
+
+@keyframes orb-pulse {
+  0%, 100% { opacity: 0; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1); }
 }
 
 @media (prefers-reduced-motion: no-preference) {

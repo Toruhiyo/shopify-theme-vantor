@@ -37,7 +37,7 @@
       {%- endif -%}
 
       {%- if section.settings.title != blank -%}
-        <h1 class="hero__title h0">{{ section.settings.title }}</h1>
+        <h1 class="hero__title h0">{{ section.settings.title_prefix }} <span class="hero__highlight">{{ section.settings.title }}</span> {{ section.settings.title_suffix }}</h1>
       {%- endif -%}
 
       {%- if section.settings.description != blank -%}
@@ -90,9 +90,21 @@
     },
     {
       "type": "text",
+      "id": "title_prefix",
+      "label": "Heading (before highlight)",
+      "default": "UNLEASH YOUR"
+    },
+    {
+      "type": "text",
       "id": "title",
-      "label": "Heading",
-      "default": "DOMINATE YOUR SETUP"
+      "label": "Heading (highlighted word)",
+      "default": "FULL POWER"
+    },
+    {
+      "type": "text",
+      "id": "title_suffix",
+      "label": "Heading (after highlight)",
+      "default": ""
     },
     {
       "type": "textarea",

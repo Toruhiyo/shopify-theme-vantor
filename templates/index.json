@@ -13,9 +13,11 @@
       "type": "hero",
       "settings": {
         "height": "large",
-        "subtitle": "New arrival",
-        "title": "DOMINATE YOUR SETUP",
-        "description": "Performance peripherals engineered for competitive players. Precision switches, ultra-light builds, and zero compromises.",
+        "subtitle": "Gear up. Level up.",
+        "title_prefix": "UNLEASH YOUR",
+        "title": "FULL POWER",
+        "title_suffix": "",
+        "description": "Pro-grade peripherals forged for the competitive edge. Precision switches, ultralight builds, zero compromises.",
         "cta_text": "Shop Now",
         "cta2_text": "View Collection"
       }

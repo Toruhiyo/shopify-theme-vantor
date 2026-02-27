@@ -1,4 +1,12 @@
 {%- assign menu = section.settings.menu -%}
+{%- assign max_visible = 7 -%}
+
+{%- comment -%} Build filtered collection array and count {%- endcomment -%}
+{%- assign nav_count = 0 -%}
+{%- for col in collections -%}
+  {%- if col.handle == 'all' or col.products_count == 0 -%}{%- continue -%}{%- endif -%}
+  {%- assign nav_count = nav_count | plus: 1 -%}
+{%- endfor -%}
 
 <header class="header" data-header>
   <div class="header__primary">
@@ -21,10 +29,11 @@
         </div>
 
         <nav class="header__nav" role="navigation" aria-label="{{ 'header.navigation' | t }}">
+          {%- assign visible_index = 0 -%}
           {%- for col in collections -%}
-            {%- if col.handle == 'all' or col.products_count == 0 -%}
-              {%- continue -%}
-            {%- endif -%}
+            {%- if col.handle == 'all' or col.products_count == 0 -%}{%- continue -%}{%- endif -%}
+            {%- assign visible_index = visible_index | plus: 1 -%}
+            {%- if visible_index > max_visible -%}{%- continue -%}{%- endif -%}
 
             <div class="header__nav-item" data-nav-mega>
               <a href="{{ col.url }}" class="header__nav-link">
@@ -39,6 +48,24 @@
               </div>
             </div>
           {%- endfor -%}
+
+          {%- if nav_count > max_visible -%}
+            <div class="header__more" data-more-dropdown>
+              <button class="header__more-trigger" aria-expanded="false">
+                More
+                <span class="header__nav-chevron">{% render 'icon-chevron' %}</span>
+              </button>
+              <div class="header__more-dropdown">
+                {%- assign overflow_index = 0 -%}
+                {%- for col in collections -%}
+                  {%- if col.handle == 'all' or col.products_count == 0 -%}{%- continue -%}{%- endif -%}
+                  {%- assign overflow_index = overflow_index | plus: 1 -%}
+                  {%- if overflow_index <= max_visible -%}{%- continue -%}{%- endif -%}
+                  <a href="{{ col.url }}" class="header__more-link">{{ col.title }}</a>
+                {%- endfor -%}
+              </div>
+            </div>
+          {%- endif -%}
         </nav>
 
         <div class="header__icons">

@@ -29,11 +29,14 @@
         "columns": "3"
       },
       "blocks": {
-        "c1": { "type": "category", "settings": {} },
-        "c2": { "type": "category", "settings": {} },
-        "c3": { "type": "category", "settings": {} }
+        "c-keyboards": { "type": "category", "settings": { "title_override": "Keyboards" } },
+        "c-mice": { "type": "category", "settings": { "title_override": "Mice" } },
+        "c-headsets": { "type": "category", "settings": { "title_override": "Headsets" } },
+        "c-controllers": { "type": "category", "settings": { "title_override": "Controllers" } },
+        "c-gaming-pcs": { "type": "category", "settings": { "title_override": "Gaming PCs" } },
+        "c-streaming": { "type": "category", "settings": { "title_override": "Streaming" } }
       },
-      "block_order": ["c1", "c2", "c3"]
+      "block_order": ["c-keyboards", "c-mice", "c-headsets", "c-controllers", "c-gaming-pcs", "c-streaming"]
     },
     "featured-collection": {
       "type": "featured-collection",

@@ -16,16 +16,33 @@
         {%- liquid
           assign tile_collection = block.settings.collection
           assign tile_title = block.settings.title_override | default: tile_collection.title
-          assign tile_image = block.settings.image_override | default: tile_collection.image
           assign tile_url = tile_collection.url | default: '#'
           assign tile_count = tile_collection.products_count
+
+          assign asset_image = 'category-' | append: tile_collection.handle | append: '.jpg' | asset_url
         -%}
 
         <a href="{{ tile_url }}" class="category-tile" {{ block.shopify_attributes }}>
           <div class="category-tile__media">
-            {%- if tile_image != blank -%}
+            {%- if block.settings.image_override != blank -%}
               <img
-                src="{{ tile_image | image_url: width: 800 }}"
+                src="{{ block.settings.image_override | image_url: width: 800 }}"
+                alt="{{ tile_title | escape }}"
+                width="800"
+                height="600"
+                loading="lazy"
+              >
+            {%- elsif asset_image != blank -%}
+              <img
+                src="{{ asset_image }}"
+                alt="{{ tile_title | escape }}"
+                width="800"
+                height="600"
+                loading="lazy"
+              >
+            {%- elsif tile_collection.image != blank -%}
+              <img
+                src="{{ tile_collection.image | image_url: width: 800 }}"
                 alt="{{ tile_title | escape }}"
                 width="800"
                 height="600"

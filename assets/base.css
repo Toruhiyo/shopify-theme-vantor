@@ -2187,24 +2187,12 @@ span.mega-menu__column-title:hover {
 /* --- Footer --- */
 .footer {
   background: var(--color-card);
-  border-top: 1px solid var(--color-border);
   position: relative;
-}
-
-.footer::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: var(--color-primary);
-  opacity: 0.15;
 }
 
 .footer__grid {
   display: grid;
-  grid-template-columns: 1.5fr repeat(3, 1fr) 1.4fr;
+  grid-template-columns: 1.5fr 1fr 1fr;
   gap: 2rem 2.5rem;
 }
 
@@ -2218,6 +2206,43 @@ span.mega-menu__column-title:hover {
   .footer__grid {
     grid-template-columns: 1fr;
   }
+}
+
+.footer__newsletter {
+  text-align: center;
+  padding: 2.5rem 0 2rem;
+  margin-top: 2rem;
+  max-width: 36rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.footer__newsletter-heading {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--color-fg);
+}
+
+.footer__newsletter-text {
+  font-size: 0.8125rem;
+  color: var(--color-muted-fg);
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+}
+
+.footer__newsletter-form {
+  display: flex;
+  gap: 0.5rem;
+  max-width: 28rem;
+  margin: 0 auto;
+}
+
+.footer__newsletter-input {
+  flex: 1;
+  min-width: 0;
 }
 
 .footer__column--brand {
@@ -2279,8 +2304,6 @@ span.mega-menu__column-title:hover {
   flex-wrap: wrap;
   gap: 1rem;
   padding-top: 2rem;
-  margin-top: 2rem;
-  border-top: 1px solid var(--color-border);
   font-size: 0.75rem;
   color: var(--color-muted-fg);
 }
@@ -2337,7 +2360,6 @@ span.mega-menu__column-title:hover {
   flex-wrap: wrap;
   gap: 2rem;
   padding: 1.25rem 0;
-  border-top: 1px solid var(--color-border);
 }
 
 .trust-row__item {

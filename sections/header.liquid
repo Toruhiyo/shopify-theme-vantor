@@ -74,8 +74,7 @@
             <div class="header__support-dropdown">
               <div class="header__support-group">
                 <span class="header__support-heading">Help</span>
-                <a href="/pages/contact" class="header__support-link">Contact Us</a>
-                <a href="/pages/faq" class="header__support-link">FAQ</a>
+                {% render 'support-links', link_class: 'header__support-link' %}
               </div>
               <div class="header__support-group">
                 <span class="header__support-heading">Policies</span>

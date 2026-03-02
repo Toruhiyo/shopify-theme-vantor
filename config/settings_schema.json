@@ -210,6 +210,17 @@
     ]
   },
   {
+    "name": "Support menu",
+    "settings": [
+      {
+        "type": "link_list",
+        "id": "support_menu",
+        "label": "Support menu",
+        "info": "Used in header Support dropdown and footer. Add Contact Us, FAQ, etc."
+      }
+    ]
+  },
+  {
     "name": "Favicon",
     "settings": [
       {

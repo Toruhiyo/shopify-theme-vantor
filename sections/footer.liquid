@@ -2,7 +2,7 @@
   <div class="page-width">
     <div class="footer__grid">
 
-      {%- comment -%} About / Brand column {%- endcomment -%}
+      {%- comment -%} Brand column {%- endcomment -%}
       <div class="footer__column footer__column--brand">
         <a href="/" class="footer__logo">
           <img src="{{ 'logo-white.png' | asset_url }}" alt="{{ shop.name }}" width="140" height="36" loading="lazy">
@@ -44,27 +44,10 @@
         </div>
       </div>
 
-      {%- comment -%} Shop column — auto from collections {%- endcomment -%}
+      {%- comment -%} Support column — same as navbar Support (Contact Us, FAQ) {%- endcomment -%}
       <div class="footer__column">
-        <h4 class="footer__heading">Shop</h4>
-        {%- for col in collections -%}
-          {%- if col.handle == 'all' or col.products_count == 0 -%}
-            {%- continue -%}
-          {%- endif -%}
-          <a href="{{ col.url }}" class="footer__link">{{ col.title }}</a>
-        {%- endfor -%}
-      </div>
-
-      {%- comment -%} Support column — from menu or shop routes {%- endcomment -%}
-      <div class="footer__column">
-        <h4 class="footer__heading">{{ section.settings.support_heading | default: 'Support' }}</h4>
-        {%- if section.settings.support_menu != blank -%}
-          {%- for link in section.settings.support_menu.links -%}
-            <a href="{{ link.url }}" class="footer__link">{{ link.title }}</a>
-          {%- endfor -%}
-        {%- else -%}
-          <a href="{{ routes.account_url }}" class="footer__link">{{ 'customer.account.title' | t | default: 'My Account' }}</a>
-        {%- endif -%}
+        <h4 class="footer__heading">Support</h4>
+        {% render 'support-links' %}
       </div>
 
       {%- comment -%} Legal column — auto from store policies {%- endcomment -%}
@@ -77,29 +60,29 @@
         {%- endfor -%}
       </div>
 
-      {%- comment -%} Newsletter column {%- endcomment -%}
-      <div class="footer__column footer__column--newsletter">
-        <h4 class="footer__heading">{{ section.settings.newsletter_heading | default: 'Stay in the Loop' }}</h4>
-        {%- if section.settings.newsletter_text != blank -%}
-          <p class="footer__text">{{ section.settings.newsletter_text }}</p>
-        {%- endif -%}
-        {% form 'customer', id: 'footer-newsletter' %}
-          <div class="newsletter__form">
-            <input
-              type="email"
-              name="contact[email]"
-              class="input"
-              placeholder="{{ section.settings.newsletter_placeholder | default: 'Enter your email' }}"
-              required
-              autocomplete="email"
-              aria-label="{{ section.settings.newsletter_placeholder | default: 'Enter your email' }}"
-            >
-            <input type="hidden" name="contact[tags]" value="newsletter">
-            <button type="submit" class="btn btn--primary btn--sm">{{ section.settings.newsletter_button | default: 'Subscribe' }}</button>
-          </div>
-        {% endform %}
-      </div>
+    </div>
 
+    {%- comment -%} Newsletter — dedicated full-width row, centered, wider {%- endcomment -%}
+    <div class="footer__newsletter">
+      <h4 class="footer__newsletter-heading">{{ section.settings.newsletter_heading | default: 'Stay in the Loop' }}</h4>
+      {%- if section.settings.newsletter_text != blank -%}
+        <p class="footer__newsletter-text">{{ section.settings.newsletter_text }}</p>
+      {%- endif -%}
+      {% form 'customer', id: 'footer-newsletter' %}
+        <div class="footer__newsletter-form">
+          <input
+            type="email"
+            name="contact[email]"
+            class="input footer__newsletter-input"
+            placeholder="{{ section.settings.newsletter_placeholder | default: 'Enter your email' }}"
+            required
+            autocomplete="email"
+            aria-label="{{ section.settings.newsletter_placeholder | default: 'Enter your email' }}"
+          >
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          <button type="submit" class="btn btn--primary">{{ section.settings.newsletter_button | default: 'Subscribe' }}</button>
+        </div>
+      {% endform %}
     </div>
 
     {%- comment -%} Trust Row {%- endcomment -%}
@@ -146,18 +129,6 @@
       "id": "brand_text",
       "label": "Brand description",
       "info": "Optional text below the logo"
-    },
-    {
-      "type": "link_list",
-      "id": "support_menu",
-      "label": "Support menu",
-      "info": "Links for Contact, FAQ, Track Order, etc. Create in Navigation."
-    },
-    {
-      "type": "text",
-      "id": "support_heading",
-      "label": "Support column heading",
-      "default": "Support"
     },
     {
       "type": "text",

@@ -232,14 +232,6 @@
         "products_count": 8,
         "show_vendor": false
       }
-    },
-    "newsletter": {
-      "type": "newsletter",
-      "settings": {
-        "subtitle": "Stay Ahead",
-        "title": "Join the Squad",
-        "text": "Get early access to new drops, exclusive deals, and pro tips delivered to your inbox."
-      }
     }
   },
   "order": [
@@ -250,7 +242,6 @@
     "editorial",
     "featured-collection-2",
     "testimonials",
-    "accessories",
-    "newsletter"
+    "accessories"
   ]
 }

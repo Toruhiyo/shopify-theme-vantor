@@ -171,6 +171,34 @@
     }
   }
 
+  /* --- Locale Selector --- */
+  class LocaleSelector {
+    constructor() {
+      document.querySelectorAll('[data-locale-selector]').forEach(el => {
+        const trigger = el.querySelector('.locale-selector__trigger');
+        if (!trigger) return;
+
+        trigger.addEventListener('click', (e) => {
+          e.stopPropagation();
+          document.querySelectorAll('[data-locale-selector].is-open').forEach(other => {
+            if (other !== el) other.classList.remove('is-open');
+          });
+          const open = el.classList.toggle('is-open');
+          trigger.setAttribute('aria-expanded', open);
+          el.querySelector('.locale-selector__dropdown')?.setAttribute('aria-hidden', !open);
+        });
+      });
+
+      document.addEventListener('click', () => {
+        document.querySelectorAll('[data-locale-selector].is-open').forEach(el => {
+          el.classList.remove('is-open');
+          el.querySelector('.locale-selector__trigger')?.setAttribute('aria-expanded', 'false');
+          el.querySelector('.locale-selector__dropdown')?.setAttribute('aria-hidden', 'true');
+        });
+      });
+    }
+  }
+
   /* --- Mobile Menu --- */
   class MobileMenu {
     constructor() {
@@ -581,6 +609,7 @@
     new DesktopNav();
     new MoreDropdown();
     new SupportDropdown();
+    new LocaleSelector();
     new MobileMenu();
     new SearchOverlay();
     new StickyHeader();

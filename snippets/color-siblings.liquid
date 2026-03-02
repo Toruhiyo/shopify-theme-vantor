@@ -44,7 +44,7 @@
     {%- assign sorted_handles = all_handles | split: ',' | sort -%}
 
     <div class="pdp__variants mb-md">
-      <p class="pdp__variant-label">Color</p>
+      <p class="pdp__variant-label">{{ 'products.color' | t }}</p>
       <div class="color-siblings" data-color-siblings>
         {%- for h in sorted_handles -%}
           {%- if h != blank -%}

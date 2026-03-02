@@ -8,6 +8,6 @@
     <a href="{{ link.url }}" class="{{ link_class }}">{{ link.title }}</a>
   {%- endfor -%}
 {%- else -%}
-  <a href="/pages/contact" class="{{ link_class }}">Contact Us</a>
-  <a href="/pages/faq" class="{{ link_class }}">FAQ</a>
+  <a href="/pages/contact" class="{{ link_class }}">{{ 'support.contact_us' | t }}</a>
+  <a href="/pages/faq" class="{{ link_class }}">{{ 'support.faq' | t }}</a>
 {%- endif -%}

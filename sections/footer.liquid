@@ -43,13 +43,13 @@
 
       {%- comment -%} Support column {%- endcomment -%}
       <div class="footer__column">
-        <h4 class="footer__heading">Support</h4>
+        <h4 class="footer__heading">{{ 'footer.support' | t }}</h4>
         {% render 'support-links' %}
       </div>
 
       {%- comment -%} Legal column {%- endcomment -%}
       <div class="footer__column footer__column--legal">
-        <h4 class="footer__heading">Legal</h4>
+        <h4 class="footer__heading">{{ 'footer.legal' | t }}</h4>
         <div class="footer__legal-links">
           {%- for policy in shop.policies -%}
             {%- if policy != blank -%}
@@ -66,19 +66,19 @@
       <div class="trust-row">
         <div class="trust-row__item">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          Secure Checkout
+          {{ 'footer.secure_checkout' | t }}
         </div>
         <div class="trust-row__item">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-          Free Shipping $99+
+          {{ 'footer.free_shipping' | t }}
         </div>
         <div class="trust-row__item">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-          Easy Returns
+          {{ 'footer.easy_returns' | t }}
         </div>
         <div class="trust-row__item">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          Warranty Included
+          {{ 'footer.warranty_included' | t }}
         </div>
       </div>
     {%- endif -%}
@@ -119,7 +119,31 @@
           </a>
         {%- endif -%}
       </div>
-      <p class="footer__copyright">&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. All rights reserved.</p>
+      <p class="footer__copyright">&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. {{ 'footer.rights' | t }}</p>
+
+      {%- if localization.available_languages.size > 1 -%}
+        <div class="locale-selector locale-selector--up" data-locale-selector>
+          <button class="locale-selector__trigger locale-selector__trigger--footer" type="button" aria-expanded="false" aria-label="{{ 'general.language' | t }}">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="7" cy="7" r="5.5"/><path d="M1.5 7h11M7 1.5c-1.5 2-2 3.5-2 5.5s.5 3.5 2 5.5M7 1.5c1.5 2 2 3.5 2 5.5s-.5 3.5-2 5.5"/></svg>
+            {{ localization.language.endonym_name }}
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2.5 6L5 3.5 7.5 6"/></svg>
+          </button>
+          <div class="locale-selector__dropdown" aria-hidden="true">
+            {%- form 'localization' -%}
+              {%- for language in localization.available_languages -%}
+                <button
+                  class="locale-selector__option{% if language.iso_code == localization.language.iso_code %} is-active{% endif %}"
+                  type="submit"
+                  name="locale_code"
+                  value="{{ language.iso_code }}"
+                >
+                  {{ language.endonym_name }}
+                </button>
+              {%- endfor -%}
+            {%- endform -%}
+          </div>
+        </div>
+      {%- endif -%}
     </div>
   </div>
 

@@ -435,26 +435,71 @@
 
       this.initFromUrl();
       this.pills.forEach(pill => pill.addEventListener('click', () => this.onPillClick(pill)));
+      this.interceptSiblingClicks();
     }
 
     initFromUrl() {
       const params = new URLSearchParams(window.location.search);
+
       const variantId = parseInt(params.get('variant'), 10);
-      if (!variantId) return;
+      if (variantId) {
+        const variant = this.variants.find(v => v.id === variantId);
+        if (variant) {
+          this.selectVariantPills(variant);
+          this.updateVariant(variant);
+          return;
+        }
+      }
 
-      const variant = this.variants.find(v => v.id === variantId);
-      if (!variant) return;
+      const size = params.get('size');
+      if (size && this.variants.length > 0) {
+        const variant = this.variants.find(v =>
+          v.available && v.options.some(o => o === size)
+        ) || this.variants.find(v => v.options.some(o => o === size));
+        if (variant) {
+          this.selectVariantPills(variant);
+          this.updateVariant(variant);
+        }
+      }
+    }
 
-      const optionGroups = this.form.querySelectorAll('.pdp__variants');
-      optionGroups.forEach((group, idx) => {
-        const targetValue = variant.options[idx];
-        if (!targetValue) return;
-        group.querySelectorAll('.variant-pill').forEach(p => {
-          p.classList.toggle('is-active', p.dataset.optionValue === targetValue);
+    selectVariantPills(variant) {
+      const groups = this.form.querySelectorAll('.pdp__variants');
+      let optionIdx = 0;
+      groups.forEach(group => {
+        if (group.querySelector('[data-color-siblings]')) return;
+        const targetValue = variant.options[optionIdx];
+        if (targetValue) {
+          group.querySelectorAll('.variant-pill').forEach(p => {
+            p.classList.toggle('is-active', p.dataset.optionValue === targetValue);
+          });
+        }
+        optionIdx++;
+      });
+    }
+
+    interceptSiblingClicks() {
+      const siblingLinks = this.form.querySelectorAll('[data-sibling-link]');
+      siblingLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          const activeSize = this.getSelectedNonColorOption();
+          if (!activeSize) return;
+          e.preventDefault();
+          const url = new URL(link.href, window.location.origin);
+          url.searchParams.set('size', activeSize);
+          window.location.href = url.toString();
         });
       });
+    }
 
-      this.updateVariant(variant);
+    getSelectedNonColorOption() {
+      const groups = this.form.querySelectorAll('.pdp__variants');
+      for (const group of groups) {
+        if (group.querySelector('[data-color-siblings]')) continue;
+        const active = group.querySelector('.variant-pill.is-active');
+        if (active) return active.dataset.optionValue;
+      }
+      return null;
     }
 
     onPillClick(pill) {

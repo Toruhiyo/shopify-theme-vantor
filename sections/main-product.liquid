@@ -106,8 +106,12 @@
             ]
           </script>
 
+          {%- comment -%} Color siblings (separate products linked by custom.sibling_group) {%- endcomment -%}
+          {% render 'color-siblings', product: product %}
+
           {%- unless product.has_only_default_variant -%}
             {%- for option in product.options_with_values -%}
+              {%- if option.name == 'Color' -%}{%- continue -%}{%- endif -%}
               <div class="pdp__variants mb-md">
                 <p class="pdp__variant-label">{{ option.name }}</p>
                 <div class="variant-pills">

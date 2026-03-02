@@ -597,6 +597,149 @@
     }
   }
 
+  /* --- Collection Filters --- */
+  class CollectionFilters {
+    constructor() {
+      this.section = document.querySelector('[data-collection-section]');
+      if (!this.section) return;
+
+      this.drawer = this.section.querySelector('[data-filter-drawer]');
+      this.overlay = this.section.querySelector('[data-filter-overlay]');
+      this.form = this.section.querySelector('[data-filter-form]');
+      this.productsContainer = this.section.querySelector('[data-collection-products]');
+      this.badgesContainer = this.section.querySelector('[data-filter-badges]');
+      this.sortSelect = this.section.querySelector('#sort-by');
+      this.sectionId = this.section.dataset.sectionId;
+
+      this.debounceTimer = null;
+      this.bindEvents();
+    }
+
+    bindEvents() {
+      this.section.querySelectorAll('[data-filter-toggle]').forEach(btn =>
+        btn.addEventListener('click', () => this.openDrawer())
+      );
+      this.section.querySelector('[data-filter-close]')?.addEventListener('click', () => this.closeDrawer());
+      this.overlay?.addEventListener('click', () => this.closeDrawer());
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && this.drawer?.classList.contains('is-open')) this.closeDrawer();
+      });
+
+      this.form?.addEventListener('change', () => this.onFilterChange());
+
+      this.section.querySelectorAll('[data-filter-remove]').forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.applyUrl(link.href);
+        });
+      });
+
+      this.section.querySelector('[data-filter-clear]')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.applyUrl(e.currentTarget.href);
+        this.closeDrawer();
+      });
+
+      this.sortSelect?.addEventListener('change', () => {
+        const url = new URL(window.location.href);
+        url.searchParams.set('sort_by', this.sortSelect.value);
+        this.applyUrl(url.toString());
+      });
+
+      this.section.querySelectorAll('[data-price-min], [data-price-max]').forEach(input => {
+        input.addEventListener('change', () => this.onFilterChange());
+      });
+    }
+
+    openDrawer() {
+      this.drawer?.classList.add('is-open');
+      this.overlay?.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    closeDrawer() {
+      this.drawer?.classList.remove('is-open');
+      this.overlay?.classList.remove('is-open');
+      document.body.style.overflow = '';
+    }
+
+    onFilterChange() {
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = setTimeout(() => {
+        const formData = new FormData(this.form);
+        const url = new URL(window.location.href);
+
+        const filterParams = Array.from(url.searchParams.entries())
+          .filter(([key]) => key.startsWith('filter.') || key === 'page');
+        filterParams.forEach(([key]) => url.searchParams.delete(key));
+
+        for (const [key, value] of formData.entries()) {
+          if (value !== '') url.searchParams.append(key, value);
+        }
+
+        url.searchParams.delete('page');
+        this.applyUrl(url.toString());
+      }, 300);
+    }
+
+    async applyUrl(urlString) {
+      const url = new URL(urlString);
+      url.searchParams.set('sections', this.sectionId);
+
+      history.replaceState({}, '', urlString);
+      this.section.classList.add('is-loading');
+
+      try {
+        const res = await fetch(url.toString());
+        const data = await res.json();
+        const html = data[this.sectionId];
+        if (!html) return;
+
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+
+        const newProducts = doc.querySelector('[data-collection-products]');
+        if (newProducts && this.productsContainer) {
+          this.productsContainer.innerHTML = newProducts.innerHTML;
+        }
+
+        const newBadges = doc.querySelector('[data-filter-badges]');
+        if (newBadges && this.badgesContainer) {
+          this.badgesContainer.innerHTML = newBadges.innerHTML;
+          this.badgesContainer.querySelectorAll('[data-filter-remove]').forEach(link => {
+            link.addEventListener('click', (e) => {
+              e.preventDefault();
+              this.applyUrl(link.href);
+            });
+          });
+        }
+
+        const newForm = doc.querySelector('[data-filter-form]');
+        if (newForm && this.form) {
+          this.form.innerHTML = newForm.innerHTML;
+          this.section.querySelectorAll('[data-price-min], [data-price-max]').forEach(input => {
+            input.addEventListener('change', () => this.onFilterChange());
+          });
+        }
+
+        const newCount = doc.querySelector('[data-products-count]');
+        const currentCount = this.section.querySelector('[data-products-count]');
+        if (newCount && currentCount) {
+          currentCount.textContent = newCount.textContent;
+        }
+
+        const newSort = doc.querySelector('#sort-by');
+        if (newSort && this.sortSelect) {
+          this.sortSelect.value = newSort.value;
+        }
+      } catch {
+        window.location = urlString;
+      } finally {
+        this.section.classList.remove('is-loading');
+      }
+    }
+  }
+
   /* --- Search Infinite Scroll --- */
   class SearchInfiniteScroll {
     constructor() {
@@ -678,6 +821,7 @@
   /* --- Initialize --- */
   function init() {
     new CartDrawer();
+    new CollectionFilters();
     new SearchInfiniteScroll();
     new DesktopNav();
     new MoreDropdown();

@@ -64,6 +64,7 @@
     "title": "Collecties",
     "products": "producten",
     "sort_by": "Sorteren op",
+    "filters": "Filters",
     "pagination": "Paginering",
     "previous": "Vorige pagina",
     "next": "Volgende pagina",

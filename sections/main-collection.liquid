@@ -5,7 +5,7 @@
   assign products_per_page = section.settings.products_per_page | default: 16
 -%}
 
-<section class="section-spacing">
+<section class="section-spacing" data-collection-section data-section-id="{{ section.id }}">
   <div class="page-width">
     {%- comment -%} Collection Header {%- endcomment -%}
     <div class="collection-header">
@@ -16,8 +16,16 @@
         {%- endif -%}
       </div>
 
-      <div class="flex items-center gap-md">
-        <span class="micro text-muted">{{ collection.products_count }} {{ 'collections.products' | t }}</span>
+      <div class="collection-header__controls">
+        {%- if section.settings.show_filters -%}
+          <button class="coll-filter-toggle" type="button" data-filter-toggle aria-label="{{ 'collections.filters' | t }}">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M4 8h8M6 12h4"/></svg>
+            {{ 'collections.filters' | t }}
+          </button>
+        {%- endif -%}
+
+        <span class="micro text-muted" data-products-count>{{ collection.products_count }} {{ 'collections.products' | t }}</span>
+
         <select class="sort-select" id="sort-by" aria-label="{{ 'collections.sort_by' | t }}">
           {%- for option in collection.sort_options -%}
             <option value="{{ option.value }}" {% if collection.sort_by == option.value %}selected{% endif %}>{{ option.name }}</option>
@@ -26,89 +34,171 @@
       </div>
     </div>
 
-    {%- comment -%} Filter Chips {%- endcomment -%}
+    {%- comment -%} Active Filter Badges {%- endcomment -%}
     {%- if section.settings.show_filters -%}
-      <div class="filter-chips mb-lg">
+      <div class="filter-badges" data-filter-badges>
         {%- for filter in collection.filters -%}
-          {%- if filter.type == 'list' -%}
-            {%- for value in filter.values -%}
-              <a
-                href="{{ value.url }}"
-                class="filter-chip {% if value.active %}is-active{% endif %}"
-                {% if value.count == 0 and value.active == false %}aria-disabled="true" style="opacity: 0.4; pointer-events: none;"{% endif %}
-              >
-                {{ value.label }}
-                {%- if value.active -%}
-                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                {%- endif -%}
+          {%- for value in filter.active_values -%}
+            <a href="{{ value.url }}" class="filter-badge" data-filter-remove>
+              {{ filter.label }}: {{ value.label }}
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2l6 6M8 2l-6 6"/></svg>
+            </a>
+          {%- endfor -%}
+          {%- if filter.type == 'price_range' -%}
+            {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
+              <a href="{{ filter.url_to_remove }}" class="filter-badge" data-filter-remove>
+                {{ filter.label }}: {{ filter.min_value.value | default: 0 | money }} – {{ filter.max_value.value | default: filter.range_max | money }}
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2l6 6M8 2l-6 6"/></svg>
               </a>
-            {%- endfor -%}
+            {%- endif -%}
           {%- endif -%}
         {%- endfor -%}
 
-        {%- assign active_filter_values = collection.filters | map: 'active_values' | flatten -%}
-        {%- if active_filter_values.size > 0 -%}
-          <a href="{{ collection.url }}" class="filter-chip" style="color: var(--color-primary); border-color: var(--color-primary);">
+        {%- assign active_count = 0 -%}
+        {%- for filter in collection.filters -%}
+          {%- assign active_count = active_count | plus: filter.active_values.size -%}
+          {%- if filter.type == 'price_range' -%}
+            {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
+              {%- assign active_count = active_count | plus: 1 -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+        {%- if active_count > 1 -%}
+          <a href="{{ collection.url }}?sort_by={{ collection.sort_by }}" class="filter-badge filter-badge--clear" data-filter-remove>
             {{ 'collections.clear_all' | t }}
           </a>
         {%- endif -%}
       </div>
     {%- endif -%}
 
+    {%- comment -%} Filter Sidebar {%- endcomment -%}
+    {%- if section.settings.show_filters -%}
+      <aside class="coll-filters" data-filter-drawer aria-label="{{ 'collections.filters' | t }}">
+        <div class="coll-filters__header">
+          <span class="coll-filters__title">{{ 'collections.filters' | t }}</span>
+          <button class="coll-filters__close" type="button" data-filter-close aria-label="{{ 'header.close_menu' | t }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <form class="coll-filters__body" data-filter-form>
+          {%- for filter in collection.filters -%}
+            <details class="coll-filter-group" open>
+              <summary class="coll-filter-group__title">
+                {{ filter.label }}
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4.5L6 7.5 9 4.5"/></svg>
+              </summary>
+
+              <div class="coll-filter-group__body">
+                {%- case filter.type -%}
+                  {%- when 'list' -%}
+                    {%- for value in filter.values -%}
+                      <label class="coll-filter-opt{% if value.count == 0 and value.active == false %} is-disabled{% endif %}">
+                        <input
+                          type="checkbox"
+                          name="{{ value.param_name }}"
+                          value="{{ value.value }}"
+                          {% if value.active %}checked{% endif %}
+                          {% if value.count == 0 and value.active == false %}disabled{% endif %}
+                        >
+                        <span class="coll-filter-opt__check"></span>
+                        <span class="coll-filter-opt__label">{{ value.label }}</span>
+                        <span class="coll-filter-opt__count">({{ value.count }})</span>
+                      </label>
+                    {%- endfor -%}
+
+                  {%- when 'price_range' -%}
+                    <div class="coll-price-range" data-price-range>
+                      <div class="coll-price-range__inputs">
+                        <div class="coll-price-range__field">
+                          <span class="coll-price-range__currency">{{ cart.currency.symbol }}</span>
+                          <input
+                            type="number"
+                            name="{{ filter.min_value.param_name }}"
+                            value="{{ filter.min_value.value | default: '' }}"
+                            min="0"
+                            max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                            placeholder="0"
+                            data-price-min
+                          >
+                        </div>
+                        <span class="coll-price-range__sep">–</span>
+                        <div class="coll-price-range__field">
+                          <span class="coll-price-range__currency">{{ cart.currency.symbol }}</span>
+                          <input
+                            type="number"
+                            name="{{ filter.max_value.param_name }}"
+                            value="{{ filter.max_value.value | default: '' }}"
+                            min="0"
+                            max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                            placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                            data-price-max
+                          >
+                        </div>
+                      </div>
+                    </div>
+                {%- endcase -%}
+              </div>
+            </details>
+          {%- endfor -%}
+        </form>
+
+        <div class="coll-filters__footer">
+          <a href="{{ collection.url }}?sort_by={{ collection.sort_by }}" class="btn btn--outline btn--sm btn--full" data-filter-clear>
+            {{ 'collections.clear_all' | t }}
+          </a>
+        </div>
+      </aside>
+      <div class="coll-filter-overlay" data-filter-overlay></div>
+    {%- endif -%}
+
     {%- comment -%} Product Grid {%- endcomment -%}
     {%- paginate collection.products by products_per_page -%}
-      {%- if collection.products.size > 0 -%}
-        <div class="grid grid--{{ columns }}">
-          {%- for product in collection.products -%}
-            {% render 'product-card', product: product, show_vendor: show_vendor, aspect_ratio: aspect_ratio %}
-          {%- endfor -%}
-        </div>
-
-        {%- comment -%} Pagination {%- endcomment -%}
-        {%- if paginate.pages > 1 -%}
-          <nav class="pagination" aria-label="{{ 'collections.pagination' | t }}">
-            {%- if paginate.previous -%}
-              <a href="{{ paginate.previous.url }}" class="pagination__btn" aria-label="{{ 'collections.previous' | t }}">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-              </a>
-            {%- endif -%}
-
-            {%- for part in paginate.parts -%}
-              {%- if part.is_link -%}
-                <a href="{{ part.url }}" class="pagination__btn">{{ part.title }}</a>
-              {%- else -%}
-                {%- if part.title == paginate.current_page -%}
-                  <span class="pagination__btn is-active" aria-current="page">{{ part.title }}</span>
-                {%- else -%}
-                  <span class="pagination__btn">{{ part.title }}</span>
-                {%- endif -%}
-              {%- endif -%}
+      <div data-collection-products>
+        {%- if collection.products.size > 0 -%}
+          <div class="grid grid--{{ columns }}" data-product-grid>
+            {%- for product in collection.products -%}
+              {% render 'product-card', product: product, show_vendor: show_vendor, aspect_ratio: aspect_ratio %}
             {%- endfor -%}
+          </div>
 
-            {%- if paginate.next -%}
-              <a href="{{ paginate.next.url }}" class="pagination__btn" aria-label="{{ 'collections.next' | t }}">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </a>
-            {%- endif -%}
-          </nav>
+          {%- if paginate.pages > 1 -%}
+            <nav class="pagination" aria-label="{{ 'collections.pagination' | t }}">
+              {%- if paginate.previous -%}
+                <a href="{{ paginate.previous.url }}" class="pagination__btn" aria-label="{{ 'collections.previous' | t }}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </a>
+              {%- endif -%}
+
+              {%- for part in paginate.parts -%}
+                {%- if part.is_link -%}
+                  <a href="{{ part.url }}" class="pagination__btn">{{ part.title }}</a>
+                {%- else -%}
+                  {%- if part.title == paginate.current_page -%}
+                    <span class="pagination__btn is-active" aria-current="page">{{ part.title }}</span>
+                  {%- else -%}
+                    <span class="pagination__btn">{{ part.title }}</span>
+                  {%- endif -%}
+                {%- endif -%}
+              {%- endfor -%}
+
+              {%- if paginate.next -%}
+                <a href="{{ paginate.next.url }}" class="pagination__btn" aria-label="{{ 'collections.next' | t }}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </a>
+              {%- endif -%}
+            </nav>
+          {%- endif -%}
+        {%- else -%}
+          <div class="text-center" style="padding: 4rem 0;">
+            <p class="h3 mb-md">{{ 'collections.empty' | t }}</p>
+            <a href="{{ routes.all_products_collection_url }}" class="btn btn--primary">{{ 'collections.continue_shopping' | t }}</a>
+          </div>
         {%- endif -%}
-      {%- else -%}
-        <div class="text-center" style="padding: 4rem 0;">
-          <p class="h3 mb-md">{{ 'collections.empty' | t }}</p>
-          <a href="{{ routes.all_products_collection_url }}" class="btn btn--primary">{{ 'collections.continue_shopping' | t }}</a>
-        </div>
-      {%- endif -%}
+      </div>
     {%- endpaginate -%}
   </div>
 </section>
-
-<script>
-  document.getElementById('sort-by')?.addEventListener('change', function() {
-    var url = new URL(window.location.href);
-    url.searchParams.set('sort_by', this.value);
-    window.location.href = url.toString();
-  });
-</script>
 
 {% schema %}
 {

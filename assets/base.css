@@ -2239,14 +2239,14 @@ span.mega-menu__column-title:hover {
 }
 
 .footer__newsletter-inner {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 12rem) 1fr;
   align-items: center;
-  justify-content: space-between;
   gap: 2rem;
 }
 
 .footer__newsletter-copy {
-  flex-shrink: 0;
+  min-width: 0;
 }
 
 .footer__newsletter-heading {
@@ -2266,7 +2266,6 @@ span.mega-menu__column-title:hover {
 .footer__newsletter-form {
   display: flex;
   gap: 0.5rem;
-  flex: 1;
   min-width: 0;
 }
 
@@ -2277,12 +2276,8 @@ span.mega-menu__column-title:hover {
 
 @media (max-width: 749px) {
   .footer__newsletter-inner {
-    flex-direction: column;
+    grid-template-columns: 1fr;
     text-align: center;
-  }
-  .footer__newsletter-form {
-    width: 100%;
-    max-width: none;
   }
 }
 

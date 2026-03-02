@@ -2226,8 +2226,7 @@ span.mega-menu__column-title:hover {
 
 .footer__logo {
   display: inline-block;
-  margin-bottom: 1rem;
-  line-height: 0;
+  margin-bottom: 0.75rem;
 }
 
 .footer__logo img {
@@ -2235,7 +2234,6 @@ span.mega-menu__column-title:hover {
   width: auto;
   object-fit: contain;
   opacity: 0.9;
-  transition: opacity 180ms ease;
 }
 
 .footer__logo:hover img {

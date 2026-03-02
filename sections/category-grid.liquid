@@ -15,13 +15,21 @@
       {%- if section.settings.use_store_collections -%}
         {%- for col in collections -%}
           {%- if col.handle == 'all' or col.products_count == 0 -%}{%- continue -%}{%- endif -%}
-          {%- assign collection_handle = col.handle -%}
-          {%- assign asset_image = 'category-' | append: collection_handle | append: '.jpg' | asset_url -%}
+          {%- assign asset_name = 'category-' | append: col.handle | append: '.jpg' -%}
+          {%- assign asset_url_check = asset_name | asset_url -%}
           <a href="{{ col.url }}" class="category-tile">
             <div class="category-tile__media">
               {%- if col.image != blank -%}
                 <img
                   src="{{ col.image | image_url: width: 800 }}"
+                  alt="{{ col.title | escape }}"
+                  width="800"
+                  height="600"
+                  loading="lazy"
+                >
+              {%- elsif asset_url_check contains asset_name -%}
+                <img
+                  src="{{ asset_url_check }}"
                   alt="{{ col.title | escape }}"
                   width="800"
                   height="600"

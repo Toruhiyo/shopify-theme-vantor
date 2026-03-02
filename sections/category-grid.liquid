@@ -12,57 +12,75 @@
     {%- endif -%}
 
     <div class="grid grid--{{ section.settings.columns }}">
-      {%- for block in section.blocks -%}
-        {%- liquid
-          assign tile_collection = block.settings.collection
-          assign tile_title = block.settings.title_override | default: tile_collection.title
-          assign tile_url = tile_collection.url | default: '#'
-          assign tile_count = tile_collection.products_count
-
-          assign title_handle = tile_title | handleize
-          assign collection_handle = tile_collection.handle | default: title_handle
-          assign asset_image = 'category-' | append: collection_handle | append: '.jpg' | asset_url
-        -%}
-
-        <a href="{{ tile_url }}" class="category-tile" {{ block.shopify_attributes }}>
-          <div class="category-tile__media">
-            {%- if block.settings.image_override != blank -%}
-              <img
-                src="{{ block.settings.image_override | image_url: width: 800 }}"
-                alt="{{ tile_title | escape }}"
-                width="800"
-                height="600"
-                loading="lazy"
-              >
-            {%- elsif asset_image != blank -%}
-              <img
-                src="{{ asset_image }}"
-                alt="{{ tile_title | escape }}"
-                width="800"
-                height="600"
-                loading="lazy"
-              >
-            {%- elsif tile_collection.image != blank -%}
-              <img
-                src="{{ tile_collection.image | image_url: width: 800 }}"
-                alt="{{ tile_title | escape }}"
-                width="800"
-                height="600"
-                loading="lazy"
-              >
-            {%- else -%}
-              {{ 'collection-' | append: forloop.index | placeholder_svg_tag: 'placeholder' }}
-            {%- endif -%}
-          </div>
-          <div class="category-tile__overlay"></div>
-          <div class="category-tile__content">
-            <h3 class="category-tile__title">{{ tile_title }}</h3>
-            {%- if tile_count != blank -%}
-              <span class="category-tile__count">{{ tile_count }} {{ 'collections.products' | t }}</span>
-            {%- endif -%}
-          </div>
-        </a>
-      {%- endfor -%}
+      {%- if section.settings.use_store_collections -%}
+        {%- for col in collections -%}
+          {%- if col.handle == 'all' or col.products_count == 0 -%}{%- continue -%}{%- endif -%}
+          {%- assign collection_handle = col.handle -%}
+          {%- assign asset_image = 'category-' | append: collection_handle | append: '.jpg' | asset_url -%}
+          <a href="{{ col.url }}" class="category-tile">
+            <div class="category-tile__media">
+              {%- if col.image != blank -%}
+                <img
+                  src="{{ col.image | image_url: width: 800 }}"
+                  alt="{{ col.title | escape }}"
+                  width="800"
+                  height="600"
+                  loading="lazy"
+                >
+              {%- else -%}
+                {{ 'collection-' | append: forloop.index | placeholder_svg_tag: 'placeholder' }}
+              {%- endif -%}
+            </div>
+            <div class="category-tile__overlay"></div>
+            <div class="category-tile__content">
+              <h3 class="category-tile__title">{{ col.title }}</h3>
+              <span class="category-tile__count">{{ col.products_count }} {{ 'collections.products' | t }}</span>
+            </div>
+          </a>
+        {%- endfor -%}
+      {%- else -%}
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign tile_collection = block.settings.collection
+            assign tile_title = block.settings.title_override | default: tile_collection.title
+            assign tile_url = tile_collection.url | default: '#'
+            assign tile_count = tile_collection.products_count
+            assign title_handle = tile_title | handleize
+            assign collection_handle = tile_collection.handle | default: title_handle
+            assign asset_image = 'category-' | append: collection_handle | append: '.jpg' | asset_url
+          -%}
+          <a href="{{ tile_url }}" class="category-tile" {{ block.shopify_attributes }}>
+            <div class="category-tile__media">
+              {%- if block.settings.image_override != blank -%}
+                <img
+                  src="{{ block.settings.image_override | image_url: width: 800 }}"
+                  alt="{{ tile_title | escape }}"
+                  width="800"
+                  height="600"
+                  loading="lazy"
+                >
+              {%- elsif tile_collection.image != blank -%}
+                <img
+                  src="{{ tile_collection.image | image_url: width: 800 }}"
+                  alt="{{ tile_title | escape }}"
+                  width="800"
+                  height="600"
+                  loading="lazy"
+                >
+              {%- else -%}
+                {{ 'collection-' | append: forloop.index | placeholder_svg_tag: 'placeholder' }}
+              {%- endif -%}
+            </div>
+            <div class="category-tile__overlay"></div>
+            <div class="category-tile__content">
+              <h3 class="category-tile__title">{{ tile_title }}</h3>
+              {%- if tile_count != blank -%}
+                <span class="category-tile__count">{{ tile_count }} {{ 'collections.products' | t }}</span>
+              {%- endif -%}
+            </div>
+          </a>
+        {%- endfor -%}
+      {%- endif -%}
     </div>
   </div>
 </section>
@@ -73,6 +91,13 @@
   "tag": "section",
   "class": "category-grid-section",
   "settings": [
+    {
+      "type": "checkbox",
+      "id": "use_store_collections",
+      "label": "Use store categories (same as navbar)",
+      "default": true,
+      "info": "When on, cards match the main navigation and link to each collection. When off, use the tiles below."
+    },
     {
       "type": "text",
       "id": "subtitle",

@@ -4,7 +4,9 @@
 
       {%- comment -%} About / Brand column {%- endcomment -%}
       <div class="footer__column footer__column--brand">
-        <h4 class="footer__heading">{{ shop.name }}</h4>
+        <a href="/" class="footer__logo">
+          <img src="{{ 'logo-white.png' | asset_url }}" alt="{{ shop.name }}" width="140" height="36" loading="lazy">
+        </a>
         <p class="footer__text">Premium gaming gear and peripherals built for competitive players. Level up your setup with cutting-edge tech.</p>
         <div class="footer__social">
           {%- if settings.social_twitter != blank -%}
@@ -117,7 +119,7 @@
 
     {%- comment -%} Bottom Bar {%- endcomment -%}
     <div class="footer__bottom">
-      <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. All rights reserved.</p>
+      <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. {{ 'footer.rights' | t }}</p>
 
       <div class="footer__payment">
         {{ shop.enabled_payment_types | payment_type_svg_tag }}

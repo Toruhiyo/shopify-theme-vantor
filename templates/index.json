@@ -126,51 +126,6 @@
         "show_view_all": true
       }
     },
-    "editorial": {
-      "type": "editorial-block",
-      "blocks": {
-        "s1": {
-          "type": "spec",
-          "settings": {
-            "value": "58g",
-            "label": "Weight"
-          }
-        },
-        "s2": {
-          "type": "spec",
-          "settings": {
-            "value": "1000Hz",
-            "label": "Polling Rate"
-          }
-        },
-        "s3": {
-          "type": "spec",
-          "settings": {
-            "value": "26K DPI",
-            "label": "Sensor"
-          }
-        },
-        "s4": {
-          "type": "spec",
-          "settings": {
-            "value": "80hrs",
-            "label": "Battery"
-          }
-        }
-      },
-      "block_order": [
-        "s1",
-        "s2",
-        "s3",
-        "s4"
-      ],
-      "settings": {
-        "subtitle": "Engineered",
-        "title": "Built for Performance",
-        "text": "<p>Every detail has been designed for competitive advantage. From the custom mechanical switches to the ultralight chassis, no compromise was made.</p>",
-        "cta_text": "Learn More"
-      }
-    },
     "featured-collection-2": {
       "type": "featured-collection",
       "settings": {
@@ -237,10 +192,9 @@
   "order": [
     "hero",
     "feature-strip",
+    "featured-collection-2",
     "category-grid",
     "featured-collection",
-    "editorial",
-    "featured-collection-2",
     "testimonials",
     "accessories"
   ]

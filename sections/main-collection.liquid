@@ -5,7 +5,7 @@
   assign products_per_page = section.settings.products_per_page | default: 16
 -%}
 
-<section class="section-spacing" data-collection-section data-section-id="{{ section.id }}">
+<section class="section-spacing" data-collection-section data-section-id="{{ section.id }}" data-filterable-section>
   <div class="page-width">
     {%- comment -%} Collection Header {%- endcomment -%}
     <div class="collection-header">

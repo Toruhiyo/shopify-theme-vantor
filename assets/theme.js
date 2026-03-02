@@ -597,19 +597,17 @@
     }
   }
 
-  /* --- Collection Filters --- */
-  class CollectionFilters {
-    constructor() {
-      this.section = document.querySelector('[data-collection-section]');
-      if (!this.section) return;
-
-      this.drawer = this.section.querySelector('[data-filter-drawer]');
-      this.overlay = this.section.querySelector('[data-filter-overlay]');
-      this.form = this.section.querySelector('[data-filter-form]');
-      this.productsContainer = this.section.querySelector('[data-collection-products]');
-      this.badgesContainer = this.section.querySelector('[data-filter-badges]');
-      this.sortSelect = this.section.querySelector('#sort-by');
-      this.sectionId = this.section.dataset.sectionId;
+  /* --- Filterable Section (Collection + Search) --- */
+  class FilterableSection {
+    constructor(section) {
+      this.section = section;
+      this.drawer = section.querySelector('[data-filter-drawer]');
+      this.overlay = section.querySelector('[data-filter-overlay]');
+      this.form = section.querySelector('[data-filter-form]');
+      this.productsContainer = section.querySelector('[data-collection-products]');
+      this.badgesContainer = section.querySelector('[data-filter-badges]');
+      this.sortSelect = section.querySelector('#sort-by');
+      this.sectionId = section.dataset.sectionId;
 
       this.debounceTimer = null;
       this.bindEvents();
@@ -628,12 +626,7 @@
 
       this.form?.addEventListener('change', () => this.onFilterChange());
 
-      this.section.querySelectorAll('[data-filter-remove]').forEach(link => {
-        link.addEventListener('click', (e) => {
-          e.preventDefault();
-          this.applyUrl(link.href);
-        });
-      });
+      this.bindBadges();
 
       this.section.querySelector('[data-filter-clear]')?.addEventListener('click', (e) => {
         e.preventDefault();
@@ -647,6 +640,19 @@
         this.applyUrl(url.toString());
       });
 
+      this.bindPriceInputs();
+    }
+
+    bindBadges() {
+      this.section.querySelectorAll('[data-filter-remove]').forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.applyUrl(link.href);
+        });
+      });
+    }
+
+    bindPriceInputs() {
       this.section.querySelectorAll('[data-price-min], [data-price-max]').forEach(input => {
         input.addEventListener('change', () => this.onFilterChange());
       });
@@ -670,9 +676,9 @@
         const formData = new FormData(this.form);
         const url = new URL(window.location.href);
 
-        const filterParams = Array.from(url.searchParams.entries())
-          .filter(([key]) => key.startsWith('filter.') || key === 'page');
-        filterParams.forEach(([key]) => url.searchParams.delete(key));
+        const keysToRemove = Array.from(url.searchParams.keys())
+          .filter(key => key.startsWith('filter.') || key === 'page');
+        keysToRemove.forEach(key => url.searchParams.delete(key));
 
         for (const [key, value] of formData.entries()) {
           if (value !== '') url.searchParams.append(key, value);
@@ -706,20 +712,13 @@
         const newBadges = doc.querySelector('[data-filter-badges]');
         if (newBadges && this.badgesContainer) {
           this.badgesContainer.innerHTML = newBadges.innerHTML;
-          this.badgesContainer.querySelectorAll('[data-filter-remove]').forEach(link => {
-            link.addEventListener('click', (e) => {
-              e.preventDefault();
-              this.applyUrl(link.href);
-            });
-          });
+          this.bindBadges();
         }
 
         const newForm = doc.querySelector('[data-filter-form]');
         if (newForm && this.form) {
           this.form.innerHTML = newForm.innerHTML;
-          this.section.querySelectorAll('[data-price-min], [data-price-max]').forEach(input => {
-            input.addEventListener('change', () => this.onFilterChange());
-          });
+          this.bindPriceInputs();
         }
 
         const newCount = doc.querySelector('[data-products-count]');
@@ -821,7 +820,7 @@
   /* --- Initialize --- */
   function init() {
     new CartDrawer();
-    new CollectionFilters();
+    document.querySelectorAll('[data-filterable-section]').forEach(el => new FilterableSection(el));
     new SearchInfiniteScroll();
     new DesktopNav();
     new MoreDropdown();

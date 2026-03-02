@@ -1,4 +1,8 @@
-<section class="section-spacing" data-search-section data-section-id="{{ section.id }}">
+{%- liquid
+  assign show_filters = section.settings.show_filters
+-%}
+
+<section class="section-spacing" data-search-section data-section-id="{{ section.id }}" data-filterable-section>
   <div class="page-width">
     <h1 class="h2 mb-lg">{{ 'search.title' | t }}</h1>
 
@@ -18,20 +22,149 @@
 
     {%- if search.performed -%}
       {%- if search.results_count > 0 -%}
-        <p class="micro text-muted mb-lg">{{ 'search.results_count' | t: count: search.results_count, terms: search.terms }}</p>
-        {%- paginate search.results by 50 -%}
-          <div class="grid grid--4" data-search-results>
-            {%- for result in search.results -%}
-              {%- if result.object_type == 'product' -%}
-                {% render 'product-card', product: result %}
-              {%- else -%}
-                <div class="card" style="padding: 1.25rem;">
-                  <p class="micro text-muted mb-sm">{{ result.object_type }}</p>
-                  <h3 class="h4 mb-sm"><a href="{{ result.url }}">{{ result.title }}</a></h3>
-                  <p class="text-muted" style="font-size: 0.875rem;">{{ result.content | strip_html | truncatewords: 20 }}</p>
-                </div>
+        <div class="collection-header__controls" style="margin-bottom: 1.25rem;">
+          {%- if show_filters and search.filters.size > 0 -%}
+            <button class="coll-filter-toggle" type="button" data-filter-toggle aria-label="{{ 'collections.filters' | t }}">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M4 8h8M6 12h4"/></svg>
+              {{ 'collections.filters' | t }}
+            </button>
+          {%- endif -%}
+          <span class="micro text-muted" data-products-count>{{ 'search.results_count' | t: count: search.results_count }}</span>
+        </div>
+
+        {%- comment -%} Active Filter Badges {%- endcomment -%}
+        {%- if show_filters and search.filters.size > 0 -%}
+          <div class="filter-badges" data-filter-badges>
+            {%- for filter in search.filters -%}
+              {%- for value in filter.active_values -%}
+                <a href="{{ value.url }}" class="filter-badge" data-filter-remove>
+                  {{ filter.label }}: {{ value.label }}
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2l6 6M8 2l-6 6"/></svg>
+                </a>
+              {%- endfor -%}
+              {%- if filter.type == 'price_range' -%}
+                {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
+                  <a href="{{ filter.url_to_remove }}" class="filter-badge" data-filter-remove>
+                    {{ filter.label }}: {{ filter.min_value.value | default: 0 | money }} – {{ filter.max_value.value | default: filter.range_max | money }}
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2l6 6M8 2l-6 6"/></svg>
+                  </a>
+                {%- endif -%}
               {%- endif -%}
             {%- endfor -%}
+
+            {%- assign active_count = 0 -%}
+            {%- for filter in search.filters -%}
+              {%- assign active_count = active_count | plus: filter.active_values.size -%}
+              {%- if filter.type == 'price_range' -%}
+                {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
+                  {%- assign active_count = active_count | plus: 1 -%}
+                {%- endif -%}
+              {%- endif -%}
+            {%- endfor -%}
+            {%- if active_count > 1 -%}
+              <a href="{{ routes.search_url }}?q={{ search.terms | url_encode }}" class="filter-badge filter-badge--clear" data-filter-remove>
+                {{ 'collections.clear_all' | t }}
+              </a>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} Filter Sidebar {%- endcomment -%}
+        {%- if show_filters and search.filters.size > 0 -%}
+          <aside class="coll-filters" data-filter-drawer aria-label="{{ 'collections.filters' | t }}">
+            <div class="coll-filters__header">
+              <span class="coll-filters__title">{{ 'collections.filters' | t }}</span>
+              <button class="coll-filters__close" type="button" data-filter-close aria-label="{{ 'header.close_menu' | t }}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+
+            <form class="coll-filters__body" data-filter-form>
+              {%- for filter in search.filters -%}
+                <details class="coll-filter-group" open>
+                  <summary class="coll-filter-group__title">
+                    {{ filter.label }}
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4.5L6 7.5 9 4.5"/></svg>
+                  </summary>
+
+                  <div class="coll-filter-group__body">
+                    {%- case filter.type -%}
+                      {%- when 'list' -%}
+                        {%- for value in filter.values -%}
+                          <label class="coll-filter-opt{% if value.count == 0 and value.active == false %} is-disabled{% endif %}">
+                            <input
+                              type="checkbox"
+                              name="{{ value.param_name }}"
+                              value="{{ value.value }}"
+                              {% if value.active %}checked{% endif %}
+                              {% if value.count == 0 and value.active == false %}disabled{% endif %}
+                            >
+                            <span class="coll-filter-opt__check"></span>
+                            <span class="coll-filter-opt__label">{{ value.label }}</span>
+                            <span class="coll-filter-opt__count">({{ value.count }})</span>
+                          </label>
+                        {%- endfor -%}
+
+                      {%- when 'price_range' -%}
+                        <div class="coll-price-range" data-price-range>
+                          <div class="coll-price-range__inputs">
+                            <div class="coll-price-range__field">
+                              <span class="coll-price-range__currency">{{ cart.currency.symbol }}</span>
+                              <input
+                                type="number"
+                                name="{{ filter.min_value.param_name }}"
+                                value="{{ filter.min_value.value | default: '' }}"
+                                min="0"
+                                max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                                placeholder="0"
+                                data-price-min
+                              >
+                            </div>
+                            <span class="coll-price-range__sep">–</span>
+                            <div class="coll-price-range__field">
+                              <span class="coll-price-range__currency">{{ cart.currency.symbol }}</span>
+                              <input
+                                type="number"
+                                name="{{ filter.max_value.param_name }}"
+                                value="{{ filter.max_value.value | default: '' }}"
+                                min="0"
+                                max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                                placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                                data-price-max
+                              >
+                            </div>
+                          </div>
+                        </div>
+                    {%- endcase -%}
+                  </div>
+                </details>
+              {%- endfor -%}
+            </form>
+
+            <div class="coll-filters__footer">
+              <a href="{{ routes.search_url }}?q={{ search.terms | url_encode }}" class="btn btn--outline btn--sm btn--full" data-filter-clear>
+                {{ 'collections.clear_all' | t }}
+              </a>
+            </div>
+          </aside>
+          <div class="coll-filter-overlay" data-filter-overlay></div>
+        {%- endif -%}
+
+        {%- paginate search.results by 50 -%}
+          <div data-collection-products>
+            <div class="grid grid--4" data-search-results>
+              {%- for result in search.results -%}
+                {%- if result.object_type == 'product' -%}
+                  {% render 'product-card', product: result %}
+                {%- else -%}
+                  <div class="card" style="padding: 1.25rem;">
+                    <p class="micro text-muted mb-sm">{{ result.object_type }}</p>
+                    <h3 class="h4 mb-sm"><a href="{{ result.url }}">{{ result.title }}</a></h3>
+                    <p class="text-muted" style="font-size: 0.875rem;">{{ result.content | strip_html | truncatewords: 20 }}</p>
+                  </div>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
           </div>
 
           {%- if paginate.next -%}
@@ -55,6 +188,13 @@
   "name": "Search results",
   "tag": "section",
   "class": "main-search-section",
-  "settings": []
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_filters",
+      "label": "Show search filters",
+      "default": true
+    }
+  ]
 }
 {% endschema %}

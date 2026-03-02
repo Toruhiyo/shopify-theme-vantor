@@ -2224,6 +2224,24 @@ span.mega-menu__column-title:hover {
   padding-right: 1rem;
 }
 
+.footer__logo {
+  display: inline-block;
+  margin-bottom: 1rem;
+  line-height: 0;
+}
+
+.footer__logo img {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+  opacity: 0.9;
+  transition: opacity 180ms ease;
+}
+
+.footer__logo:hover img {
+  opacity: 1;
+}
+
 .footer__column--newsletter {
   min-width: 0;
 }

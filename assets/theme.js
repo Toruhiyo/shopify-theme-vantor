@@ -421,21 +421,106 @@
   class VariantSelector {
     constructor(container) {
       this.form = container;
+      this.idInput = container.querySelector('[data-variant-id-input]');
+      this.variants = JSON.parse(
+        (container.querySelector('[data-product-variants]') || {}).textContent || '[]'
+      );
       this.pills = container.querySelectorAll('.variant-pill');
-      this.select = container.querySelector('select[name="id"]');
+      this.priceEl = document.querySelector('.pdp__price');
+      this.compareEl = document.querySelector('.pdp__compare-price');
+      this.badgeEl = document.querySelector('.pdp__price-row .badge--sale');
+      this.addBtn = container.querySelector('[type="submit"]');
+      this.mainImage = document.getElementById('pdp-main-image');
+      this.stickyPrice = document.querySelector('.pdp-sticky-bar__price');
 
-      this.pills.forEach(pill => {
-        pill.addEventListener('click', () => {
-          const group = pill.closest('.pdp__variants-group');
-          group?.querySelectorAll('.variant-pill').forEach(p => p.classList.remove('is-active'));
-          pill.classList.add('is-active');
+      this.initFromUrl();
+      this.pills.forEach(pill => pill.addEventListener('click', () => this.onPillClick(pill)));
+    }
 
-          if (this.select && pill.dataset.variantId) {
-            this.select.value = pill.dataset.variantId;
-            this.select.dispatchEvent(new Event('change'));
-          }
+    initFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const variantId = parseInt(params.get('variant'), 10);
+      if (!variantId) return;
+
+      const variant = this.variants.find(v => v.id === variantId);
+      if (!variant) return;
+
+      const optionGroups = this.form.querySelectorAll('.pdp__variants');
+      optionGroups.forEach((group, idx) => {
+        const targetValue = variant.options[idx];
+        if (!targetValue) return;
+        group.querySelectorAll('.variant-pill').forEach(p => {
+          p.classList.toggle('is-active', p.dataset.optionValue === targetValue);
         });
       });
+
+      this.updateVariant(variant);
+    }
+
+    onPillClick(pill) {
+      const group = pill.closest('.pdp__variants');
+      group.querySelectorAll('.variant-pill').forEach(p => p.classList.remove('is-active'));
+      pill.classList.add('is-active');
+
+      const selectedOptions = [];
+      this.form.querySelectorAll('.pdp__variants').forEach(g => {
+        const active = g.querySelector('.variant-pill.is-active');
+        if (active) selectedOptions.push(active.dataset.optionValue);
+      });
+
+      const variant = this.variants.find(v =>
+        v.options.length === selectedOptions.length &&
+        v.options.every((opt, i) => opt === selectedOptions[i])
+      );
+
+      if (variant) this.updateVariant(variant);
+    }
+
+    updateVariant(variant) {
+      if (this.idInput) this.idInput.value = variant.id;
+
+      const url = new URL(window.location);
+      url.searchParams.set('variant', variant.id);
+      window.history.replaceState({}, '', url);
+
+      if (this.priceEl) {
+        this.priceEl.textContent = variant.price_formatted;
+        this.priceEl.classList.toggle(
+          'pdp__price--sale',
+          variant.compare_at_price && variant.compare_at_price > variant.price
+        );
+      }
+
+      if (variant.compare_at_price && variant.compare_at_price > variant.price) {
+        const savings = Math.round((variant.compare_at_price - variant.price) / variant.compare_at_price * 100);
+        if (this.compareEl) {
+          this.compareEl.textContent = variant.compare_at_price_formatted;
+          this.compareEl.style.display = '';
+        }
+        if (this.badgeEl) {
+          this.badgeEl.textContent = `-${savings}%`;
+          this.badgeEl.style.display = '';
+        }
+      } else {
+        if (this.compareEl) this.compareEl.style.display = 'none';
+        if (this.badgeEl) this.badgeEl.style.display = 'none';
+      }
+
+      if (this.addBtn) {
+        if (variant.available) {
+          this.addBtn.disabled = false;
+          this.addBtn.innerHTML = `${this.addBtn.textContent.split('—')[0].trim()} &mdash; ${variant.price_formatted}`;
+        } else {
+          this.addBtn.disabled = true;
+          this.addBtn.textContent = 'Sold Out';
+        }
+      }
+
+      if (this.stickyPrice) this.stickyPrice.textContent = variant.price_formatted;
+
+      if (variant.featured_image && this.mainImage) {
+        this.mainImage.src = variant.featured_image;
+      }
     }
   }
 

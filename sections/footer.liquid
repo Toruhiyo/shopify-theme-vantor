@@ -48,13 +48,15 @@
       </div>
 
       {%- comment -%} Legal column {%- endcomment -%}
-      <div class="footer__column">
+      <div class="footer__column footer__column--legal">
         <h4 class="footer__heading">Legal</h4>
-        {%- for policy in shop.policies -%}
-          {%- if policy != blank -%}
-            <a href="{{ policy.url }}" class="footer__link">{{ policy.title }}</a>
-          {%- endif -%}
-        {%- endfor -%}
+        <div class="footer__legal-links">
+          {%- for policy in shop.policies -%}
+            {%- if policy != blank -%}
+              <a href="{{ policy.url }}" class="footer__link">{{ policy.title }}</a>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
       </div>
 
     </div>

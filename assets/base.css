@@ -2310,6 +2310,7 @@ span.mega-menu__column-title:hover {
 
 .footer__column--brand {
   padding-right: 2rem;
+  max-width: 18rem;
 }
 
 .footer__logo {
@@ -2342,6 +2343,13 @@ span.mega-menu__column-title:hover {
   color: var(--color-muted-fg);
   line-height: 1.6;
   margin-bottom: 1rem;
+  max-width: 16rem;
+}
+
+.footer__legal-links {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem 1.5rem;
 }
 
 .footer__link {

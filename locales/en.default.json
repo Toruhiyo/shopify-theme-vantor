@@ -90,7 +90,7 @@
     "title": "Search",
     "placeholder": "Search products...",
     "submit": "Search",
-    "results_count": "{{ count }} results for \"{{ terms }}\"",
+    "results_count": "{{ count }} results",
     "no_results": "No results for \"{{ terms }}\"",
     "no_results_hint": "Try a different search term or browse our collections."
   },

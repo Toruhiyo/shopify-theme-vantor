@@ -213,6 +213,33 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+.search-load-more {
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.search-load-more__spinner {
+  display: block;
+}
+
+.search-load-more.is-loading .search-load-more__spinner::after {
+  content: "";
+  display: block;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--color-border, rgba(255,255,255,0.15));
+  border-top-color: var(--color-accent, #a855f7);
+  border-radius: 50%;
+  animation: search-load-spin 0.6s linear infinite;
+}
+
+@keyframes search-load-spin {
+  to { transform: rotate(360deg); }
+}
+
 /* --- Typography Scale --- */
 .h0 {
   font-size: clamp(2.5rem, 5vw, 4.5rem);

@@ -1,4 +1,4 @@
-<section class="section-spacing">
+<section class="section-spacing" data-search-section data-section-id="{{ section.id }}">
   <div class="page-width">
     <h1 class="h2 mb-lg">{{ 'search.title' | t }}</h1>
 
@@ -19,23 +19,27 @@
     {%- if search.performed -%}
       {%- if search.results_count > 0 -%}
         <p class="micro text-muted mb-lg">{{ 'search.results_count' | t: count: search.results_count, terms: search.terms }}</p>
-        <div class="grid grid--4">
-          {%- for result in search.results -%}
-            {%- if result.object_type == 'product' -%}
-              {% render 'product-card', product: result %}
-            {%- else -%}
-              <div class="card" style="padding: 1.25rem;">
-                <p class="micro text-muted mb-sm">{{ result.object_type }}</p>
-                <h3 class="h4 mb-sm"><a href="{{ result.url }}">{{ result.title }}</a></h3>
-                <p class="text-muted" style="font-size: 0.875rem;">{{ result.content | strip_html | truncatewords: 20 }}</p>
-              </div>
-            {%- endif -%}
-          {%- endfor -%}
-        </div>
+        {%- paginate search.results by 50 -%}
+          <div class="grid grid--4" data-search-results>
+            {%- for result in search.results -%}
+              {%- if result.object_type == 'product' -%}
+                {% render 'product-card', product: result %}
+              {%- else -%}
+                <div class="card" style="padding: 1.25rem;">
+                  <p class="micro text-muted mb-sm">{{ result.object_type }}</p>
+                  <h3 class="h4 mb-sm"><a href="{{ result.url }}">{{ result.title }}</a></h3>
+                  <p class="text-muted" style="font-size: 0.875rem;">{{ result.content | strip_html | truncatewords: 20 }}</p>
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
 
-        {%- if search.results_count > search.results.size -%}
-          {% comment %} Pagination handled via paginate tag {% endcomment %}
-        {%- endif -%}
+          {%- if paginate.next -%}
+            <div class="search-load-more" data-search-load-more data-next-url="{{ paginate.next.url }}" aria-hidden="true">
+              <span class="search-load-more__spinner" aria-live="polite"></span>
+            </div>
+          {%- endif -%}
+        {%- endpaginate -%}
       {%- else -%}
         <div class="text-center" style="padding: 4rem 0;">
           <p class="h3 mb-md">{{ 'search.no_results' | t: terms: search.terms }}</p>

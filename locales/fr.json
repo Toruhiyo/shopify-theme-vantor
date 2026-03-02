@@ -90,7 +90,7 @@
     "title": "Recherche",
     "placeholder": "Rechercher des produits...",
     "submit": "Rechercher",
-    "results_count": "{{ count }} résultats pour « {{ terms }} »",
+    "results_count": "{{ count }} résultats",
     "no_results": "Aucun résultat pour « {{ terms }} »",
     "no_results_hint": "Essayez un autre terme ou parcourez nos collections."
   },

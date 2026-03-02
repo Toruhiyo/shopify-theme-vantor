@@ -90,7 +90,7 @@
     "title": "搜索",
     "placeholder": "搜索商品...",
     "submit": "搜索",
-    "results_count": "「{{ terms }}」的 {{ count }} 个结果",
+    "results_count": "{{ count }} 个结果",
     "no_results": "「{{ terms }}」没有找到结果",
     "no_results_hint": "请尝试其他搜索词或浏览我们的系列。"
   },

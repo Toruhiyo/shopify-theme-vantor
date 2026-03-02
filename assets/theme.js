@@ -597,6 +597,78 @@
     }
   }
 
+  /* --- Search Infinite Scroll --- */
+  class SearchInfiniteScroll {
+    constructor() {
+      this.section = document.querySelector('[data-search-section]');
+      if (!this.section) return;
+
+      this.grid = this.section.querySelector('[data-search-results]');
+      this.sentinel = this.section.querySelector('[data-search-load-more]');
+      if (!this.grid || !this.sentinel) return;
+
+      this.loading = false;
+      this.observer = new IntersectionObserver(
+        (entries) => {
+          if (this.loading) return;
+          if (entries[0].isIntersecting) this.loadNext();
+        },
+        { rootMargin: '200px', threshold: 0 }
+      );
+      this.observer.observe(this.sentinel);
+    }
+
+    getFetchUrl() {
+      const nextUrl = this.sentinel.dataset.nextUrl;
+      if (!nextUrl) return null;
+      const sectionId = this.section.dataset.sectionId;
+      if (!sectionId) return null;
+      const sep = nextUrl.includes('?') ? '&' : '?';
+      const base = window.Shopify?.routes?.root ?? '/';
+      const path = nextUrl.startsWith('/') ? nextUrl : base + nextUrl;
+      return `${path}${sep}sections=${encodeURIComponent(sectionId)}`;
+    }
+
+    async loadNext() {
+      const url = this.getFetchUrl();
+      if (!url) return;
+
+      this.loading = true;
+      this.sentinel.classList.add('is-loading');
+
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        const sectionId = this.section.dataset.sectionId;
+        const html = data[sectionId];
+        if (!html) return;
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newGrid = doc.querySelector('[data-search-results]');
+        const newSentinel = doc.querySelector('[data-search-load-more]');
+
+        if (newGrid) {
+          while (newGrid.firstChild) {
+            this.grid.appendChild(newGrid.firstChild);
+          }
+        }
+
+        if (newSentinel?.dataset.nextUrl) {
+          this.sentinel.dataset.nextUrl = newSentinel.dataset.nextUrl;
+        } else {
+          this.sentinel.remove();
+          this.observer.disconnect();
+        }
+      } catch {
+        this.sentinel.classList.remove('is-loading');
+      } finally {
+        this.loading = false;
+        this.sentinel.classList.remove('is-loading');
+      }
+    }
+  }
+
   /* --- Helpers --- */
   function isInputFocused() {
     const el = document.activeElement;
@@ -606,6 +678,7 @@
   /* --- Initialize --- */
   function init() {
     new CartDrawer();
+    new SearchInfiniteScroll();
     new DesktopNav();
     new MoreDropdown();
     new SupportDropdown();

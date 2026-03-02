@@ -90,7 +90,7 @@
     "title": "Zoeken",
     "placeholder": "Zoek producten...",
     "submit": "Zoeken",
-    "results_count": "{{ count }} resultaten voor \"{{ terms }}\"",
+    "results_count": "{{ count }} resultaten",
     "no_results": "Geen resultaten voor \"{{ terms }}\"",
     "no_results_hint": "Probeer een andere zoekterm of bekijk onze collecties."
   },

@@ -108,6 +108,7 @@
                     {%- endfor -%}
 
                   {%- when 'price_range' -%}
+                    {%- assign range_max_display = filter.range_max | money_without_currency | replace: ',', '' -%}
                     <div class="coll-price-range" data-price-range>
                       <div class="coll-price-range__inputs">
                         <div class="coll-price-range__field">
@@ -115,9 +116,9 @@
                           <input
                             type="number"
                             name="{{ filter.min_value.param_name }}"
-                            value="{{ filter.min_value.value | default: '' }}"
+                            {% if filter.min_value.value != nil %}value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}"{% endif %}
                             min="0"
-                            max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                            max="{{ range_max_display }}"
                             placeholder="0"
                             data-price-min
                           >
@@ -128,10 +129,10 @@
                           <input
                             type="number"
                             name="{{ filter.max_value.param_name }}"
-                            value="{{ filter.max_value.value | default: '' }}"
+                            {% if filter.max_value.value != nil %}value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}"{% endif %}
                             min="0"
-                            max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
-                            placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                            max="{{ range_max_display }}"
+                            placeholder="{{ range_max_display }}"
                             data-price-max
                           >
                         </div>

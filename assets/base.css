@@ -1739,6 +1739,11 @@ span.mega-menu__column-title:hover {
   opacity: 0.4;
 }
 
+.category-tile__placeholder--fallback {
+  position: absolute;
+  inset: 0;
+}
+
 .category-tile__overlay {
   position: absolute;
   inset: 0;

@@ -2208,8 +2208,8 @@ span.mega-menu__column-title:hover {
   color: var(--color-muted);
 }
 
-/* --- Filterable section loading state --- */
-[data-filterable-section].is-loading [data-collection-products] {
+/* --- Collection loading state --- */
+[data-collection-section].is-loading [data-collection-products] {
   opacity: 0.4;
   pointer-events: none;
   transition: opacity 200ms ease;

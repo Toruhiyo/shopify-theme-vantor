@@ -16,6 +16,44 @@
   --color-accent-fuchsia: #9333ea;
 }
 
+/* --- Page Loader --- */
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg, #040406);
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.loader.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.loader__logo {
+  width: clamp(160px, 22vw, 260px);
+  height: auto;
+  animation: loader-pulse 1.8s ease-in-out infinite;
+  filter: drop-shadow(0 0 30px rgba(124,58,237,0.35));
+}
+
+@keyframes loader-pulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(0.96);
+    filter: drop-shadow(0 0 20px rgba(124,58,237,0.2));
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+    filter: drop-shadow(0 0 40px rgba(124,58,237,0.5)) drop-shadow(0 0 80px rgba(232,149,106,0.15));
+  }
+}
+
 /* --- Reset & Base --- */
 *,
 *::before,

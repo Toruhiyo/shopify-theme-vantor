@@ -70,6 +70,11 @@
 </head>
 
 <body class="template-{{ template.name }}{% if template.suffix %} template-{{ template.name }}-{{ template.suffix }}{% endif %}">
+
+  <div class="loader" id="page-loader" aria-hidden="true">
+    <img src="{{ 'logo-transparent.png' | asset_url }}" alt="{{ shop.name }}" class="loader__logo" width="200" height="52">
+  </div>
+
   <a class="skip-link" href="#main-content">{{ 'accessibility.skip_to_content' | t }}</a>
 
   {% sections 'header-group' %}

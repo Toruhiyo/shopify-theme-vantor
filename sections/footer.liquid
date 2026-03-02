@@ -7,7 +7,9 @@
         <a href="/" class="footer__logo">
           <img src="{{ 'logo-white.png' | asset_url }}" alt="{{ shop.name }}" width="140" height="36" loading="lazy">
         </a>
-        <p class="footer__text">Premium gaming gear and peripherals built for competitive players. Level up your setup with cutting-edge tech.</p>
+        {%- if section.settings.brand_text != blank -%}
+          <p class="footer__text">{{ section.settings.brand_text }}</p>
+        {%- endif -%}
         <div class="footer__social">
           {%- if settings.social_twitter != blank -%}
             <a href="{{ settings.social_twitter }}" target="_blank" rel="noopener" aria-label="X (Twitter)">
@@ -53,13 +55,16 @@
         {%- endfor -%}
       </div>
 
-      {%- comment -%} Support column {%- endcomment -%}
+      {%- comment -%} Support column — from menu or shop routes {%- endcomment -%}
       <div class="footer__column">
-        <h4 class="footer__heading">Support</h4>
-        <a href="/pages/contact" class="footer__link">Contact Us</a>
-        <a href="/pages/faq" class="footer__link">FAQ</a>
-        <a href="{{ routes.account_url }}" class="footer__link">My Account</a>
-        <a href="/pages/track-order" class="footer__link">Track Order</a>
+        <h4 class="footer__heading">{{ section.settings.support_heading | default: 'Support' }}</h4>
+        {%- if section.settings.support_menu != blank -%}
+          {%- for link in section.settings.support_menu.links -%}
+            <a href="{{ link.url }}" class="footer__link">{{ link.title }}</a>
+          {%- endfor -%}
+        {%- else -%}
+          <a href="{{ routes.account_url }}" class="footer__link">{{ 'customer.account.title' | t | default: 'My Account' }}</a>
+        {%- endif -%}
       </div>
 
       {%- comment -%} Legal column — auto from store policies {%- endcomment -%}
@@ -74,21 +79,23 @@
 
       {%- comment -%} Newsletter column {%- endcomment -%}
       <div class="footer__column footer__column--newsletter">
-        <h4 class="footer__heading">Stay in the Loop</h4>
-        <p class="footer__text">Get drops, deals, and new gear first.</p>
+        <h4 class="footer__heading">{{ section.settings.newsletter_heading | default: 'Stay in the Loop' }}</h4>
+        {%- if section.settings.newsletter_text != blank -%}
+          <p class="footer__text">{{ section.settings.newsletter_text }}</p>
+        {%- endif -%}
         {% form 'customer', id: 'footer-newsletter' %}
           <div class="newsletter__form">
             <input
               type="email"
               name="contact[email]"
               class="input"
-              placeholder="{{ 'footer.email_placeholder' | t }}"
+              placeholder="{{ section.settings.newsletter_placeholder | default: 'Enter your email' }}"
               required
               autocomplete="email"
-              aria-label="{{ 'footer.email_placeholder' | t }}"
+              aria-label="{{ section.settings.newsletter_placeholder | default: 'Enter your email' }}"
             >
             <input type="hidden" name="contact[tags]" value="newsletter">
-            <button type="submit" class="btn btn--primary btn--sm">{{ 'footer.subscribe' | t }}</button>
+            <button type="submit" class="btn btn--primary btn--sm">{{ section.settings.newsletter_button | default: 'Subscribe' }}</button>
           </div>
         {% endform %}
       </div>
@@ -119,7 +126,7 @@
 
     {%- comment -%} Bottom Bar {%- endcomment -%}
     <div class="footer__bottom">
-      <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. {{ 'footer.rights' | t }}</p>
+      <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. All rights reserved.</p>
 
       <div class="footer__payment">
         {{ shop.enabled_payment_types | payment_type_svg_tag }}
@@ -134,6 +141,48 @@
   "tag": "div",
   "class": "footer-section",
   "settings": [
+    {
+      "type": "textarea",
+      "id": "brand_text",
+      "label": "Brand description",
+      "info": "Optional text below the logo"
+    },
+    {
+      "type": "link_list",
+      "id": "support_menu",
+      "label": "Support menu",
+      "info": "Links for Contact, FAQ, Track Order, etc. Create in Navigation."
+    },
+    {
+      "type": "text",
+      "id": "support_heading",
+      "label": "Support column heading",
+      "default": "Support"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "label": "Newsletter heading",
+      "default": "Stay in the Loop"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_text",
+      "label": "Newsletter description",
+      "default": "Get drops, deals, and new gear first."
+    },
+    {
+      "type": "text",
+      "id": "newsletter_placeholder",
+      "label": "Newsletter placeholder",
+      "default": "Enter your email"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_button",
+      "label": "Newsletter button",
+      "default": "Subscribe"
+    },
     {
       "type": "checkbox",
       "id": "show_trust_row",

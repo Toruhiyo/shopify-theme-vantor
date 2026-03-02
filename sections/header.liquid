@@ -14,17 +14,13 @@
       <div class="header__inner">
         <div class="header__logo">
           <a href="/">
-            {%- if section.settings.logo != blank -%}
-              <img
-                src="{{ section.settings.logo | image_url: width: 200 }}"
-                alt="{{ shop.name }}"
-                width="200"
-                height="40"
-                loading="eager"
-              >
-            {%- else -%}
-              {{ shop.name }}
-            {%- endif -%}
+            <img
+              src="{%- if section.settings.logo != blank -%}{{ section.settings.logo | image_url: width: 200 }}{%- else -%}{{ 'logo-transparent.png' | asset_url }}{%- endif -%}"
+              alt="{{ shop.name }}"
+              width="160"
+              height="40"
+              loading="eager"
+            >
           </a>
         </div>
 

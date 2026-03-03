@@ -1,0 +1,67 @@
+{%- comment -%}
+  Product Links — Renders linked products as variant-like selectors.
+  Each linking metafield group shows as a row of product swatches.
+
+  Metafields must be list.product_reference under the "custom" namespace.
+  To add a new linking metafield, append to both KEYS and LABELS.
+
+  Required param: product
+{%- endcomment -%}
+
+{%- liquid
+  assign LINK_REF_KEYS   = 'sibling_products,compatible_products'
+  assign LINK_REF_LABELS = 'Options,Compatible with'
+  assign LINK_MAX_ITEMS  = 12
+-%}
+
+{%- assign _ref_keys = LINK_REF_KEYS | split: ',' -%}
+{%- assign _ref_labels = LINK_REF_LABELS | split: ',' -%}
+
+{%- for idx in (0..9) -%}
+  {%- if idx >= _ref_keys.size -%}{%- break -%}{%- endif -%}
+  {%- assign _key = _ref_keys[idx] | strip -%}
+  {%- if _key == blank -%}{%- continue -%}{%- endif -%}
+  {%- assign _label = _ref_labels[idx] | strip -%}
+  {%- assign _refs = product.metafields.custom[_key].value -%}
+
+  {%- if _refs != blank -%}
+    {%- assign _valid_count = 0 -%}
+    {%- for _ref in _refs -%}
+      {%- if _ref != blank and _ref.handle != blank -%}
+        {%- assign _valid_count = _valid_count | plus: 1 -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- if _valid_count > 1 -%}
+      <div class="pdp__variants mb-md">
+        <p class="pdp__variant-label">{{ _label }}</p>
+        <div class="product-link-group" data-product-link-group>
+          {%- assign _rendered = 0 -%}
+          {%- for _ref in _refs -%}
+            {%- if _rendered >= LINK_MAX_ITEMS -%}{%- break -%}{%- endif -%}
+            {%- if _ref != blank and _ref.handle != blank -%}
+              <a
+                href="{{ _ref.url }}"
+                class="product-link-swatch{% if _ref.id == product.id %} is-active{% endif %}"
+                aria-label="{{ _ref.title }}"
+                title="{{ _ref.title }}"
+                data-product-link
+              >
+                {%- if _ref.featured_image -%}
+                  <img
+                    src="{{ _ref.featured_image | image_url: width: 140 }}"
+                    alt="{{ _ref.title | escape }}"
+                    loading="lazy"
+                    width="70"
+                    height="70"
+                  >
+                {%- endif -%}
+              </a>
+              {%- assign _rendered = _rendered | plus: 1 -%}
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+{%- endfor -%}

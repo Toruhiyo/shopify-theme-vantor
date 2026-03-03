@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin language editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "accessibility": {
     "skip_to_content": "Skip to content"
@@ -53,7 +62,9 @@
     "increase_quantity": "Increase quantity",
     "thumbnail": "Thumbnail",
     "reviews_count": "{{ count }} reviews",
-    "color": "Color",
+    "link_options": "Options",
+    "link_model": "Model",
+    "link_compatible": "Compatible with",
     "badges": {
       "new": "New",
       "hot": "Hot",

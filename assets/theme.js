@@ -1,5 +1,5 @@
 /* ============================================================
-   CRIMSON INDEX — Theme JavaScript
+   VANTOR — Theme JavaScript
    ============================================================ */
 
 (function () {
@@ -463,7 +463,7 @@
 
       this.initFromUrl();
       this.pills.forEach(pill => pill.addEventListener('click', () => this.onPillClick(pill)));
-      this.interceptProductLinkClicks();
+      this.interceptSiblingClicks();
     }
 
     initFromUrl() {
@@ -495,7 +495,7 @@
       const groups = this.form.querySelectorAll('.pdp__variants');
       let optionIdx = 0;
       groups.forEach(group => {
-        if (group.querySelector('[data-product-link-group]')) return;
+        if (group.querySelector('[data-color-siblings]')) return;
         const targetValue = variant.options[optionIdx];
         if (targetValue) {
           group.querySelectorAll('.variant-pill').forEach(p => {
@@ -506,24 +506,24 @@
       });
     }
 
-    interceptProductLinkClicks() {
-      const links = this.form.querySelectorAll('[data-product-link]');
-      links.forEach(link => {
+    interceptSiblingClicks() {
+      const siblingLinks = this.form.querySelectorAll('[data-sibling-link]');
+      siblingLinks.forEach(link => {
         link.addEventListener('click', (e) => {
-          const activeOption = this.getSelectedNonLinkOption();
-          if (!activeOption) return;
+          const activeSize = this.getSelectedNonColorOption();
+          if (!activeSize) return;
           e.preventDefault();
           const url = new URL(link.href, window.location.origin);
-          url.searchParams.set('size', activeOption);
+          url.searchParams.set('size', activeSize);
           window.location.href = url.toString();
         });
       });
     }
 
-    getSelectedNonLinkOption() {
+    getSelectedNonColorOption() {
       const groups = this.form.querySelectorAll('.pdp__variants');
       for (const group of groups) {
-        if (group.querySelector('[data-product-link-group]')) continue;
+        if (group.querySelector('[data-color-siblings]')) continue;
         const active = group.querySelector('.variant-pill.is-active');
         if (active) return active.dataset.optionValue;
       }

@@ -1,78 +1,78 @@
 [
   {
     "name": "theme_info",
-    "theme_name": "Crimson Index",
+    "theme_name": "Vantor",
     "theme_version": "1.0.0",
     "theme_author": "Bizmis",
-    "theme_documentation_url": "https://github.com/Toruhiyo/shopify-theme-crimson-index",
-    "theme_support_url": "https://github.com/Toruhiyo/shopify-theme-crimson-index/issues"
+    "theme_documentation_url": "https://github.com/Toruhiyo/shopify-theme-vantor",
+    "theme_support_url": "https://github.com/Toruhiyo/shopify-theme-vantor/issues"
   },
   {
     "name": "Colors",
     "settings": [
       {
         "type": "header",
-        "content": "Core palette"
+        "content": "Dark mode (default)"
       },
       {
         "type": "color",
         "id": "color_background",
         "label": "Background",
-        "default": "#FFFFFF"
+        "default": "#040406"
       },
       {
         "type": "color",
         "id": "color_foreground",
         "label": "Foreground",
-        "default": "#111111"
+        "default": "#f5f5f7"
       },
       {
         "type": "color",
         "id": "color_card",
-        "label": "Card / Surface",
-        "default": "#F5F5F7"
+        "label": "Card background",
+        "default": "#09090d"
       },
       {
         "type": "color",
         "id": "color_muted",
         "label": "Muted background",
-        "default": "#F5F5F7"
+        "default": "#0d0d12"
       },
       {
         "type": "color",
         "id": "color_muted_foreground",
-        "label": "Secondary text",
-        "default": "#6E6E73"
+        "label": "Muted foreground",
+        "default": "#7a7a8e"
       },
       {
         "type": "color",
         "id": "color_border",
-        "label": "Borders / Dividers",
-        "default": "#E5E5EA"
+        "label": "Border",
+        "default": "#16161f"
       },
       {
         "type": "color",
         "id": "color_primary",
-        "label": "Primary accent (red)",
-        "default": "#D1001A"
+        "label": "Primary accent (purple)",
+        "default": "#a855f7"
       },
       {
         "type": "color",
         "id": "color_primary_foreground",
         "label": "Primary foreground",
-        "default": "#FFFFFF"
+        "default": "#ffffff"
       },
       {
         "type": "color",
         "id": "color_success",
         "label": "Success",
-        "default": "#34C759"
+        "default": "#22c55e"
       },
       {
         "type": "color",
         "id": "color_warning",
         "label": "Warning",
-        "default": "#FF9500"
+        "default": "#eab308"
       }
     ]
   },
@@ -83,13 +83,13 @@
         "type": "font_picker",
         "id": "font_heading",
         "label": "Heading font",
-        "default": "inter_n6"
+        "default": "space_grotesk_n7"
       },
       {
         "type": "font_picker",
         "id": "font_body",
         "label": "Body font",
-        "default": "inter_n4"
+        "default": "space_grotesk_n4"
       },
       {
         "type": "range",
@@ -99,7 +99,7 @@
         "max": 20,
         "step": 1,
         "unit": "px",
-        "default": 16
+        "default": 15
       },
       {
         "type": "range",
@@ -110,18 +110,6 @@
         "step": 5,
         "unit": "%",
         "default": 100
-      },
-      {
-        "type": "select",
-        "id": "typography_scale",
-        "label": "Typography scale",
-        "options": [
-          { "value": "small", "label": "Small" },
-          { "value": "normal", "label": "Normal" },
-          { "value": "large", "label": "Large" }
-        ],
-        "default": "normal",
-        "info": "Adjusts overall type sizing across the theme"
       }
     ]
   },
@@ -131,12 +119,12 @@
       {
         "type": "range",
         "id": "page_width",
-        "label": "Max content width (px)",
+        "label": "Page width (px)",
         "min": 1000,
         "max": 1600,
-        "step": 20,
+        "step": 50,
         "unit": "px",
-        "default": 1280
+        "default": 1400
       },
       {
         "type": "range",
@@ -146,40 +134,17 @@
         "max": 80,
         "step": 8,
         "unit": "px",
-        "default": 64
+        "default": 48
       },
       {
         "type": "range",
-        "id": "button_radius",
-        "label": "Button radius (px)",
+        "id": "border_radius",
+        "label": "Border radius (px)",
         "min": 0,
-        "max": 24,
+        "max": 8,
         "step": 2,
         "unit": "px",
-        "default": 10
-      },
-      {
-        "type": "range",
-        "id": "card_radius",
-        "label": "Card radius (px)",
-        "min": 0,
-        "max": 24,
-        "step": 2,
-        "unit": "px",
-        "default": 16
-      },
-      {
-        "type": "checkbox",
-        "id": "borders_visible",
-        "label": "Show borders",
-        "default": true
-      },
-      {
-        "type": "checkbox",
-        "id": "minimal_shadows",
-        "label": "Minimal shadows",
-        "default": true,
-        "info": "Adds very subtle shadows to cards and elevated elements"
+        "default": 4
       }
     ]
   },
